@@ -22,14 +22,14 @@ public class User extends BaseEntity {
 
     private String name;
 
-    private boolean isPublic;
+    private boolean is_public;
 
-    public User(String email, String password, String name, boolean isPublic){
+    public User(String email, String password, String name, boolean is_public){
 
         this.email = email;
         this.password = password;
         this.name = name;
-        this.isPublic = isPublic;
+        this.is_public = is_public;
 
     }
 }
