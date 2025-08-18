@@ -21,14 +21,14 @@ public class User {
 
     private String name;
 
-    private boolean is_public;
+    private boolean isPublic;
 
-    public User(String email, String password, String name, boolean is_public){
+    public User(String email, String password, String name, boolean isPublic){
 
         this.email = email;
         this.password = password;
         this.name = name;
-        this.is_public = is_public;
+        this.isPublic = isPublic;
 
     }
 }
