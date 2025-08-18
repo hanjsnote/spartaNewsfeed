@@ -18,4 +18,8 @@ JDK: corretto-17 Amazon Corretto-17.0.15 - aarch64
 | 게시물 조회    | GET    | /posts/          | 게시물 전부 조회  | 200 OK      |                                                                                             | {<br/>"id": 1,<br/>"name": "JS",<br/>"title": "제목",<br/>"contents":"내용",<br/>"createdAt": "2025-08-01",<br/>"modifiedAt": "2025-08-01"<br/>},<br/>{...},<br>.... |
 | 게시물 단건 조회 | GET    | /posts/{user_id} | 게시물 단건 조회  | 200 OK      |                                                                                             | {<br/>"id": 1,<br/>"name": "JS",<br/>"title": "제목",<br/>"contents":"내용",<br/>"createdAt": "2025-08-01",<br/>"modifiedAt": "2025-08-01"<br/>}                     |
 | 게시물 수정    | PUT    | /posts/{user_id} | 특정 게시물 수정  | 200 OK      | {<br/>"name": "JS2",<br/>"password": "1234",<br/>"title": "제목2",<br/>"contents": "내용"<br/>} | {<br/>"id": 1,<br/>"name": "JS2",<br/>"title": "제목2",<br/>"contents":"내용",<br/>"createdAt": "2025-08-01",<br/>"modifiedAt": "2025-08-02"<br/>}                   |
+
 | 게시물 삭제    | DELETE | /posts/{user_id} | 특정 게시물 삭제  | 200 OK      |                                                                                             | {}                                                                                                                                    |
+
+# ERD
+<img width="729" height="841" alt="스크린샷 2025-08-18 151150" src="https://github.com/user-attachments/assets/2a4855f4-8fde-443a-9027-34781872caa6" />
