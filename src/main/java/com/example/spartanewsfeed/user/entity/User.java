@@ -1,6 +1,5 @@
 package com.example.spartanewsfeed.user.entity;
 
-import com.example.spartanewsfeed.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +21,14 @@ public class User extends BaseEntity {
 
     private String name;
 
-    private boolean isPublic;
+    private boolean is_public;
 
-    public User(String email, String password, String name, boolean isPublic){
+    public User(String email, String password, String name, boolean is_public){
 
         this.email = email;
         this.password = password;
         this.name = name;
-        this.isPublic = isPublic;
+        this.is_public = is_public;
 
     }
 }
