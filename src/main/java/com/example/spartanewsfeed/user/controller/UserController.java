@@ -1,8 +1,10 @@
 package com.example.spartanewsfeed.user.controller;
 
-import com.example.spartanewsfeed.user.dto.request.SignUpRequestDto;
-import com.example.spartanewsfeed.user.dto.response.SignUpResponseDto;
-import com.example.spartanewsfeed.user.dto.response.UserResponseDto;
+import com.example.spartanewsfeed.user.dto.request.SignUpRequest;
+import com.example.spartanewsfeed.user.dto.request.UpdateUserRequest;
+import com.example.spartanewsfeed.user.dto.response.SignUpResponse;
+import com.example.spartanewsfeed.user.dto.response.FindUserResponse;
+import com.example.spartanewsfeed.user.dto.response.UpdateUserResponse;
 import com.example.spartanewsfeed.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,21 +22,29 @@ public class UserController {
 
     //회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signUp(@RequestBody SignUpRequestDto requestDto){
+    public ResponseEntity<SignUpResponse> signUp(@RequestBody SignUpRequest request){
 
-        SignUpResponseDto SignUpResponseDto = userService.signUp(requestDto);
+        SignUpResponse SignUpResponse = userService.signUp(request);
 
-        return new ResponseEntity<>(SignUpResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(SignUpResponse, HttpStatus.CREATED);
     }
 
     //회원 조회
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> findUsers(@RequestParam(required = false) String name){
+    public ResponseEntity<List<FindUserResponse>> findUsers(@RequestParam(required = false) String name){
 
-        List<UserResponseDto> userResponseDto = userService.findUsers(name);
+        List<FindUserResponse> findUserResponse = userService.findUsers(name);
 
-        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(findUserResponse, HttpStatus.OK);
     }
 
+    //회원 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable long id, @RequestBody UpdateUserRequest request){
+
+        UpdateUserResponse updateUserResponse = userService.updateUser(id, request);
+
+        return new ResponseEntity<>(updateUserResponse, HttpStatus.OK);
+    }
 
 }
