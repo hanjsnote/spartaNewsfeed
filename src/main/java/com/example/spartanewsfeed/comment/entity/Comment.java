@@ -1,4 +1,36 @@
 package com.example.spartanewsfeed.comment.entity;
 
-public class Comment {
+import com.example.spartanewsfeed.common.entity.BaseEntity;
+import com.example.spartanewsfeed.post.entity.Post;
+import com.example.spartanewsfeed.user.entity.User;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@Table(name = "comment")
+public class Comment extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    public Comment(User user, Post post, String content) {
+        this.user = user;
+        this.post = post;
+        this.content = content;
+    }
+    public void commentUpdate(String content) {
+        this.content = content ;
+    }
 }
