@@ -5,9 +5,9 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class SignUpResponseDto {
+public class SignUpResponse {
 
-    private final Long userId;
+    private final Long id;
 
     private final String email;
 
@@ -19,8 +19,8 @@ public class SignUpResponseDto {
 
     private final LocalDateTime modifiedAt;
 
-    public SignUpResponseDto (Long userId, String email, String name, boolean isPublic, LocalDateTime createdAt, LocalDateTime modifiedAt){
-        this.userId = userId;
+    public SignUpResponse(Long id, String email, String name, boolean isPublic, LocalDateTime createdAt, LocalDateTime modifiedAt){
+        this.id = id;
         this.email = email;
         this.name = name;
         this.isPublic = isPublic;
