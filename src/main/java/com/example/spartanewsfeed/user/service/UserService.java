@@ -26,7 +26,7 @@ public class UserService {
         userRepository.save(user);
 
         return new SignUpResponseDto(
-                user.getUserId(),
+                user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.isPublic(),
