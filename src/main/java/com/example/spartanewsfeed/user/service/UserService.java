@@ -2,11 +2,16 @@ package com.example.spartanewsfeed.user.service;
 
 import com.example.spartanewsfeed.user.dto.request.SignUpRequestDto;
 import com.example.spartanewsfeed.user.dto.response.SignUpResponseDto;
+import com.example.spartanewsfeed.user.dto.response.UserResponseDto;
 import com.example.spartanewsfeed.user.entity.User;
 import com.example.spartanewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -26,13 +31,49 @@ public class UserService {
         userRepository.save(user);
 
         return new SignUpResponseDto(
-                user.getUserId(),
+                user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.isPublic(),
                 user.getCreatedAt(),
                 user.getModifiedAt()
         );
+    }
+
+    //유저 조회
+    @Transactional(readOnly = true)
+    public List<UserResponseDto> findUsers(String name) {
+
+        List<User> users = userRepository.findAll();
+        List<UserResponseDto> findUser = new ArrayList<>();
+
+        if(name == null){
+            for(User user : users){
+                findUser.add(new UserResponseDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.isPublic(),
+                        user.getCreatedAt(),
+                        user.getModifiedAt()
+                ));
+            }
+            return findUser;
+        }
+
+        for(User user : users){
+            if(name.equals(user.getName())){
+                findUser.add(new UserResponseDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.isPublic(),
+                        user.getCreatedAt(),
+                        user.getModifiedAt()
+                ));
+            }
+        }
+        return findUser;
     }
 
 }
