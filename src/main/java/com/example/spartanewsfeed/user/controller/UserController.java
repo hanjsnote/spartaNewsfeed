@@ -33,18 +33,22 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<FindUserResponse>> findUsers(@RequestParam(required = false) String name){
 
-        List<FindUserResponse> findUserResponse = userService.findUsers(name);
-
-        return new ResponseEntity<>(findUserResponse, HttpStatus.OK);
+        return ResponseEntity.ok(userService.findUsers(name));
     }
 
     //회원 수정
     @PatchMapping("/{id}")
     public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable long id, @RequestBody UpdateUserRequest request){
 
-        UpdateUserResponse updateUserResponse = userService.updateUser(id, request);
-
-        return new ResponseEntity<>(updateUserResponse, HttpStatus.OK);
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
+    //회원 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable long id){
+
+        userService.deleteUser(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
