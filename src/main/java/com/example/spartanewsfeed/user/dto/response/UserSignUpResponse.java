@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class SignUpResponse {
+public class UserSignUpResponse {
 
     private final Long id;
 
@@ -19,7 +19,7 @@ public class SignUpResponse {
 
     private final LocalDateTime modifiedAt;
 
-    public SignUpResponse(Long id, String email, String name, boolean isPublic, LocalDateTime createdAt, LocalDateTime modifiedAt){
+    public UserSignUpResponse(Long id, String email, String name, boolean isPublic, LocalDateTime createdAt, LocalDateTime modifiedAt){
         this.id = id;
         this.email = email;
         this.name = name;

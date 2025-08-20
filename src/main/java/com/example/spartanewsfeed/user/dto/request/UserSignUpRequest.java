@@ -3,7 +3,7 @@ package com.example.spartanewsfeed.user.dto.request;
 import lombok.Getter;
 
 @Getter
-public class SignUpRequest {
+public class UserSignUpRequest {
 
     private final String email;
 
@@ -13,7 +13,7 @@ public class SignUpRequest {
 
     private final boolean isPublic;
 
-    public SignUpRequest(String email, String name, String password, boolean isPublic){
+    public UserSignUpRequest(String email, String name, String password, boolean isPublic){
         this.email = email;
         this.name = name;
         this.password = password;

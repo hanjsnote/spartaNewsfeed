@@ -13,7 +13,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     // 필터가 적용되지 않는 주소들(로그인 없이 접근 가능한 주소들)
-    private static final String[] WHITE_LIST = {"/", "/users", "/users/signup"};
+    private static final String[] WHITE_LIST = {"/", "/login", "/users", "/users/*", "/users/signup"};
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -24,7 +24,7 @@ public class LoginFilter implements Filter {
 
         if (!isWhiteList(requestURI)) {
             HttpSession session = httpRequest.getSession(false);
-            if(session == null || session.getAttribute("로그인 세션 속성명") == null){
+            if(session == null || session.getAttribute("sessionKey") == null){
                 httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 해주세요.");
                 return;
             }
