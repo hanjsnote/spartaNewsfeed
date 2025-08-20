@@ -52,4 +52,12 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //회원 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable long id){
+
+        userService.deleteUser(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
