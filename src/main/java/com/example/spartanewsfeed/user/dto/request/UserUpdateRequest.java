@@ -3,7 +3,7 @@ package com.example.spartanewsfeed.user.dto.request;
 import lombok.Getter;
 
 @Getter
-public class UpdateUserRequest {
+public class UserUpdateRequest {
 
     private final String email;
 
@@ -15,7 +15,7 @@ public class UpdateUserRequest {
 
     private final boolean isPublic;
 
-    public UpdateUserRequest(String email, String oldPassword, String newPassword, String name, boolean isPublic) {
+    public UserUpdateRequest(String email, String oldPassword, String newPassword, String name, boolean isPublic) {
         this.email = email;
         this.oldPassword = oldPassword;
         this.newPassword = newPassword;

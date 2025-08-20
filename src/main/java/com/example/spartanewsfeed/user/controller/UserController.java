@@ -1,10 +1,10 @@
 package com.example.spartanewsfeed.user.controller;
 
-import com.example.spartanewsfeed.user.dto.request.SignUpRequest;
-import com.example.spartanewsfeed.user.dto.request.UpdateUserRequest;
-import com.example.spartanewsfeed.user.dto.response.SignUpResponse;
-import com.example.spartanewsfeed.user.dto.response.FindUserResponse;
-import com.example.spartanewsfeed.user.dto.response.UpdateUserResponse;
+import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
+import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
+import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
+import com.example.spartanewsfeed.user.dto.response.UserFindResponse;
+import com.example.spartanewsfeed.user.dto.response.UserUpdateResponse;
 import com.example.spartanewsfeed.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,25 +22,34 @@ public class UserController {
 
     //회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> signUp(@RequestBody SignUpRequest request){
+    public ResponseEntity<UserSignUpResponse> signUp(@RequestBody UserSignUpRequest request){
 
-        SignUpResponse SignUpResponse = userService.signUp(request);
+        UserSignUpResponse UserSignUpResponse = userService.signUp(request);
 
-        return new ResponseEntity<>(SignUpResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(UserSignUpResponse, HttpStatus.CREATED);
     }
 
     //회원 조회
     @GetMapping
-    public ResponseEntity<List<FindUserResponse>> findUsers(@RequestParam(required = false) String name){
+    public ResponseEntity<List<UserFindResponse>> findUsers(@RequestParam(required = false) String name){
 
         return ResponseEntity.ok(userService.findUsers(name));
     }
 
     //회원 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable long id, @RequestBody UpdateUserRequest request){
+    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest request){
 
         return ResponseEntity.ok(userService.updateUser(id, request));
+    }
+
+    //회원 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable long id){
+
+        userService.deleteUser(id);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //회원 삭제
