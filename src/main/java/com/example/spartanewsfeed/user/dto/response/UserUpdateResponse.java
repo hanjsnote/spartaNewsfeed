@@ -3,7 +3,7 @@ package com.example.spartanewsfeed.user.dto.response;
 import lombok.Getter;
 
 @Getter
-public class UpdateUserResponse {
+public class UserUpdateResponse {
 
     private final String email;
 
@@ -11,7 +11,7 @@ public class UpdateUserResponse {
 
     private final boolean isPublic;
 
-    public UpdateUserResponse(String email, String name, boolean isPublic){
+    public UserUpdateResponse(String email, String name, boolean isPublic){
         this.email = email;
         this.name = name;
         this.isPublic = isPublic;

@@ -1,7 +1,6 @@
 package com.example.spartanewsfeed.user.entity;
 
 import com.example.spartanewsfeed.common.entity.BaseEntity;
-import com.example.spartanewsfeed.user.dto.response.UpdateUserResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
