@@ -1,11 +1,10 @@
 package com.example.spartanewsfeed.post.entity;
 
 import com.example.spartanewsfeed.common.entity.BaseEntity;
+import com.example.spartanewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,6 +22,10 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     /*- 조건 : 게시물 수정, 삭제는 작성자 본인만 처리할 수 있습니다.
     - 예외처리 : 작성자가 아닌 다른 사용자가 게시물 수정, 삭제를 시도하는 경우
 
@@ -32,10 +35,18 @@ public class Post extends BaseEntity {
      */
 
     // 유저 아이디 받아야 함.
+    // 유저 네임
 
-    public Post(String title, String content) {
+    /*
+    좋아요 유/무와 좋아요 갯수 포함시켜야함
+
+    단건 조회시 댓글도 포함시켜서 출력
+     */
+
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
 
     public void updatePost(String title, String content) {

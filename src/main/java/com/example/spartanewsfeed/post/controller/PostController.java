@@ -14,48 +14,51 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/users")
 public class PostController {
 
     private final PostService postService;
 
     // 게시물 등록
-    @PostMapping
+    @PostMapping("/{userId}/posts")
     public ResponseEntity<PostResponse> createPost(
-            //@PathVariable Long id, 유저 아이디 받아야함
+            @PathVariable Long userId,
             @RequestBody PostRequest postRequest
     ) {
-        return ResponseEntity.ok(postService.createPost(postRequest));
+        return ResponseEntity.ok(postService.createPost(userId, postRequest));
     }
 
     // 전체 조회
-    @GetMapping
+    @GetMapping("/posts")
     public ResponseEntity<List<GetResponse>> getPosts(
-            //@RequestParam (required = false) Long id 아이디를 받을 수도 있고 아닐 수도 있다.
+            @RequestParam(required = false) Long userId
     ) {
-        return ResponseEntity.ok(postService.postAll());
+        return ResponseEntity.ok(postService.postAll(userId));
     }
 
     // 단건 조회
-    @GetMapping("/{postId}")
+    @GetMapping("/{userId}/posts/{postId}")
     public ResponseEntity<GetResponse> getPostById(
+            @PathVariable Long userId,
             @PathVariable Long postId
     ) {
-        return ResponseEntity.ok(postService.findPostById(postId));
+        return ResponseEntity.ok(postService.findPostById(userId, postId));
     }
 
     // 게시물 수정
-    @PatchMapping("/{postId}")
+    @PatchMapping("/{userId}/posts/{postId}")
     public ResponseEntity<PatchResponse> updatePost(
+            @PathVariable Long userId,
             @PathVariable Long postId,
             @RequestBody PatchRequest patchRequest
     ) {
-        return ResponseEntity.ok(postService.updatePost(postId, patchRequest));
+        return ResponseEntity.ok(postService.updatePost(userId, postId, patchRequest));
     }
 
     // 게시물 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/{userId}/posts/{postId}")
     public ResponseEntity<Void> deletePost(
+            @PathVariable Long userId,
             @PathVariable Long postId
     ) {
         postService.deletePost(postId);
