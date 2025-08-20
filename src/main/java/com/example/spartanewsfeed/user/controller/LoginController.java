@@ -27,4 +27,15 @@ public class LoginController {
 
         return ResponseEntity.ok("로그인 성공");
     }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request){
+        //로그인 하지 않으면 HttpSession이 null로 반환
+        HttpSession session = request.getSession(false);
+        if(session != null){
+            session.invalidate();   //해당 세션(데이터)를 삭제
+        }
+    }
+
+
 }
