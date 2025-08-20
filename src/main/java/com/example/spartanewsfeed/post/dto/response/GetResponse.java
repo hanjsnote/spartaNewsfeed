@@ -7,32 +7,29 @@ import java.time.LocalDateTime;
 @Getter
 public class GetResponse {
     private final Long id;
-    /*
-     private final Long userId,
-     private final String userName
-     */
+    private final Long userId;
+    private final String name;
     private final String title;
     private final String content;
     private final LocalDateTime created;
     private final LocalDateTime modified;
+    private final int likeCount;
 
     public GetResponse(Long id,
-                       String title,
-                       /*
                        Long userId,
-                       String userName
-                       */
+                       String name,
+                       String title,
                        String content,
                        LocalDateTime created,
-                       LocalDateTime modified) {
+                       LocalDateTime modified,
+                       int likeCount) {
         this.id = id;
-        this.title = title;
-        /*
         this.userId = userId;
-        this.userName = userName;
-        */
+        this.name = name;
+        this.title = title;
         this.content = content;
         this.created = created;
         this.modified = modified;
+        this.likeCount = likeCount;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.spartanewsfeed.user.controller;
 
+
 import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
 import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
 import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
@@ -22,7 +23,7 @@ public class UserController {
 
     //회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<UserSignUpResponse> signUp(@RequestBody UserSignUpRequest request){
+    public ResponseEntity<UserSignUpResponse> signUp(@RequestBody UserSignUpRequest request) {
 
         UserSignUpResponse UserSignUpResponse = userService.signUp(request);
 
@@ -31,30 +32,21 @@ public class UserController {
 
     //회원 조회
     @GetMapping
-    public ResponseEntity<List<UserFindResponse>> findUsers(@RequestParam(required = false) String name){
+    public ResponseEntity<List<UserFindResponse>> findUsers(@RequestParam(required = false) String name) {
 
         return ResponseEntity.ok(userService.findUsers(name));
     }
 
     //회원 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest request){
+    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest request) {
 
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     //회원 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long id){
-
-        userService.deleteUser(id);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    //회원 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long id){
+    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
 
         userService.deleteUser(id);
 
