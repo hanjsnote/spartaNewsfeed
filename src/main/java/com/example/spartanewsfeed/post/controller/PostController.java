@@ -7,10 +7,9 @@ import com.example.spartanewsfeed.post.dto.response.PatchResponse;
 import com.example.spartanewsfeed.post.dto.response.PostResponse;
 import com.example.spartanewsfeed.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,10 +29,12 @@ public class PostController {
 
     // 전체 조회
     @GetMapping("/posts")
-    public ResponseEntity<List<GetResponse>> getPosts(
-            @RequestParam(required = false) Long userId
+    public ResponseEntity<Page<GetResponse>> getPosts(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(postService.postAll(userId));
+        return ResponseEntity.ok(postService.postAll(userId,page,size));
     }
 
     // 단건 조회
@@ -61,7 +62,7 @@ public class PostController {
             @PathVariable Long userId,
             @PathVariable Long postId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(userId, postId);
         return ResponseEntity.ok().build();
     }
 }

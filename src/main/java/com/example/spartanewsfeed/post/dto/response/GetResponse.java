@@ -13,6 +13,7 @@ public class GetResponse {
     private final String content;
     private final LocalDateTime created;
     private final LocalDateTime modified;
+    private final int likeCount;
 
     public GetResponse(Long id,
                        Long userId,
@@ -20,7 +21,8 @@ public class GetResponse {
                        String title,
                        String content,
                        LocalDateTime created,
-                       LocalDateTime modified) {
+                       LocalDateTime modified,
+                       int likeCount) {
         this.id = id;
         this.userId = userId;
         this.name = name;
@@ -28,5 +30,6 @@ public class GetResponse {
         this.content = content;
         this.created = created;
         this.modified = modified;
+        this.likeCount = likeCount;
     }
 }
