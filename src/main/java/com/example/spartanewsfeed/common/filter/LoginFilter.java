@@ -13,7 +13,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
     // 필터가 적용되지 않는 주소들(로그인 없이 접근 가능한 주소들)
-    private static final String[] WHITE_LIST = {"/", "/login", "/users", "/users/*", "/users/signup"};
+    private static final String[] WHITE_LIST = {"/*"};
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
