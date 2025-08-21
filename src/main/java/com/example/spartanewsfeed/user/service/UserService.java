@@ -30,16 +30,17 @@ public class UserService {
     //회원 가입
     public UserSignUpResponse signUp(UserSignUpRequest request) {
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());     //요청받은 비밀번호를 암호화
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {     //이메일 중복 확인
             throw new IllegalArgumentException("해당 이메일은 이미 사용중입니다.");
         }
 
-        User user = new User(request.getEmail(), request.getName(), encodedPassword, request.isPublic());
+        //User 엔티티 생성 후 저장
+        User user = new User(request.getEmail(), request.getName(), encodedPassword);
         userRepository.save(user);
 
-        return new UserSignUpResponse(
+        return new UserSignUpResponse( //응답 객체 생성
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
@@ -53,10 +54,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserFindResponse> findUsers(String name) {
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(); //모든 회원 조회
         List<UserFindResponse> findUser = new ArrayList<>();
 
-        if (name == null) {
+        if (name == null) {     //이름이 null이면 전체 조회
             for (User user : users) {
                 findUser.add(new UserFindResponse(
                         user.getId(),
@@ -71,7 +72,7 @@ public class UserService {
         }
 
         for (User user : users) {
-            if (name.equals(user.getName())) {
+            if (name.equals(user.getName())) {  //이름이 일치하는 회원만 조회
                 findUser.add(new UserFindResponse(
                         user.getId(),
                         user.getName(),
@@ -85,16 +86,16 @@ public class UserService {
         return findUser;
     }
 
-    //회원 수정
+    //회원 정보 수정
     public UserUpdateResponse updateUser(Long id, UserUpdateRequest request) {
 
-        User users = userRepository.findByIdOrElseThrow(id);
+        User users = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
 
-        if (!users.getPassword().equals(request.getOldPassword())) {
+        if (!users.getPassword().equals(request.getOldPassword())) {    //사용자가 입력한 비밀번호가 userRepository에 저장된 비밀번호가 다르면 401 에러
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
-        users.updateUser(
+        users.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
                 request.getNewPassword(),
@@ -111,7 +112,7 @@ public class UserService {
     //회원 삭제
     public void deleteUser(Long id) {
 
-        userRepository.findByIdOrElseThrow(id);
+        userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
         userRepository.deleteById(id);
 
     }
@@ -119,9 +120,9 @@ public class UserService {
     //로그인
     @Transactional(readOnly = true)
     public Long login(UserLoginRequest requestDto) {
-        User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());
+        User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());   //이메일 존재 여부 확인
 
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {   //비밀번호 검증
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
         return user.getId();
