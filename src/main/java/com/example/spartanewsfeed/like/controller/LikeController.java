@@ -18,7 +18,7 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    // TODO : ("유저 로그인 세션 키 속성의 키값 입력하기")
+    // TODO : ("유저 로그인 세션 키 속성의 키값 입력하기 세션 키 상수로 변경 시 입력 잊으면 고릴라가 되어서 동물원에서 살아라 바나나 먹으면서")
 
     @PostMapping("")
     public ResponseEntity<LikeSaveResponse> doLike(
