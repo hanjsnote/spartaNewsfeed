@@ -6,6 +6,7 @@ import com.example.spartanewsfeed.post.dto.response.GetResponse;
 import com.example.spartanewsfeed.post.dto.response.PatchResponse;
 import com.example.spartanewsfeed.post.dto.response.PostResponse;
 import com.example.spartanewsfeed.post.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,9 @@ public class PostController {
     // 게시물 등록
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
-            @SessionAttribute("sessionKey") Long userId,
+            @SessionAttribute("sessionKey") Long userId, // 상수로 세션키를 받도록 수정해야함
 //            @PathVariable Long userId,
-            @RequestBody PostRequest postRequest
+            @Valid @RequestBody PostRequest postRequest
     ) {
         return ResponseEntity.ok(postService.createPost(userId, postRequest));
     }
@@ -38,16 +39,7 @@ public class PostController {
         return ResponseEntity.ok(postService.postAll(userId, page, size));
     }
 
-//    // 단건 조회
-//    @GetMapping("/{userId}/posts/{postId}")
-//    public ResponseEntity<GetResponse> getPostById(
-//            @PathVariable Long userId,
-//            @PathVariable Long postId
-//    ) {
-//        return ResponseEntity.ok(postService.findPostById(userId, postId));
-//    }
-
-    // 단건 조회 유저 아이디 없는 버전
+    // 단건 조회
     @GetMapping("/{postId}")
     public ResponseEntity<GetResponse> getPostById(
             @PathVariable Long postId
@@ -58,10 +50,10 @@ public class PostController {
     // 게시물 수정
     @PatchMapping("/{postId}")
     public ResponseEntity<PatchResponse> updatePost(
-            @SessionAttribute("sessionKey") Long userId,
+            @SessionAttribute("sessionKey") Long userId, // 상수로 세션키를 받도록 수정해야함
 //            @PathVariable Long userId, 유저 아이디를 이제 세션으로 정보를 받아오니 제외
             @PathVariable Long postId,
-            @RequestBody PatchRequest patchRequest
+            @Valid @RequestBody PatchRequest patchRequest
     ) {
         return ResponseEntity.ok(postService.updatePost(userId, postId, patchRequest));
     }
@@ -69,7 +61,7 @@ public class PostController {
     // 게시물 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
-            @SessionAttribute("sessionKey") Long userId,
+            @SessionAttribute("sessionKey") Long userId, // 상수로 세션키를 받도록 수정해야함
 //            @PathVariable Long userId, 유저 아이디를 이제 세션으로 정보를 받아오니 제외
             @PathVariable Long postId
     ) {
