@@ -1,48 +1,40 @@
 package com.example.spartanewsfeed.follow.controller;
 
 import com.example.spartanewsfeed.follow.service.FollowService;
-import com.example.spartanewsfeed.follow.dto.request.FollowRequestDto;
-import com.example.spartanewsfeed.user.entity.User;
+import com.example.spartanewsfeed.follow.dto.response.FollowResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.spartanewsfeed.user.repository.UserRepository;
 
 @RestController
-@RequestMapping("/users/{userId}")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class FollowController {
 
     private final FollowService followService;
-    private final UserRepository userRepository;
 
-    @PostMapping("/follow")
-    public ResponseEntity<String> follow(@PathVariable Long userId, @RequestBody FollowRequestDto requestDto) {
+    @PostMapping("/{followingId}/follow")
+    public ResponseEntity<FollowResponse> follow(@PathVariable Long followingId, HttpServletRequest request) {
         try {
-            User follower = userRepository.findById(userId).orElseThrow(
-                    () -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-            User following = userRepository.findById(requestDto.getFollowingId()).orElseThrow(
-                    () -> new IllegalArgumentException("팔로우 대상을 찾을 수 없습니다."));
-            followService.followUser(follower, following);
+            Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
 
-            return ResponseEntity.ok("팔로우했습니다.");
+            followService.followUser(followerId, followingId);
+            return ResponseEntity.ok(new FollowResponse("팔로우했습니다."));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new FollowResponse(e.getMessage()));
         }
     }
 
-    @DeleteMapping("/follow")
-    public ResponseEntity<String> unfollow(@PathVariable Long userId, @RequestBody FollowRequestDto requestDto) {
+    @DeleteMapping("/{followingId}/follow")
+    public ResponseEntity<FollowResponse> unfollow(@PathVariable Long followingId, HttpServletRequest request) {
         try {
-            User follower = userRepository.findById(userId).orElseThrow(
-                    () -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-            User following = userRepository.findById(requestDto.getFollowingId()).orElseThrow(
-                    () -> new IllegalArgumentException("언팔로우 대상을 찾을 수 없습니다."));
-            followService.unfollowUser(follower, following);
+            Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
 
-            return ResponseEntity.ok("언팔로우됐습니다.");
+            followService.unfollowUser(followerId, followingId);
+            return ResponseEntity.ok(new FollowResponse("언팔로우됐습니다."));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new FollowResponse(e.getMessage()));
         }
     }
 }
