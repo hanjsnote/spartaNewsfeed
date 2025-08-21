@@ -1,11 +1,10 @@
 package com.example.spartanewsfeed.user.controller;
 
-
 import com.example.spartanewsfeed.user.dto.request.UserDeleteRequest;
 import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
 import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
-import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
 import com.example.spartanewsfeed.user.dto.response.UserFindResponse;
+import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
 import com.example.spartanewsfeed.user.dto.response.UserUpdateResponse;
 import com.example.spartanewsfeed.user.service.UserService;
 import jakarta.validation.Valid;
@@ -34,9 +33,10 @@ public class UserController {
 
     //회원 조회
     @GetMapping
-    public ResponseEntity<List<UserFindResponse>> findUsers(@RequestParam(required = false) String name) {
+    public ResponseEntity<List<UserFindResponse>> findUsers(
+            @SessionAttribute("sessionKey") Long sessionUserId, @RequestParam(required = false) String name) {
 
-        return ResponseEntity.ok(userService.findUsers(name));
+        return ResponseEntity.ok(userService.findUsers(sessionUserId, name));
     }
 
     //회원 수정

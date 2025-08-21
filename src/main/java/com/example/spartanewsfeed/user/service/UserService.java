@@ -51,13 +51,35 @@ public class UserService {
 
     //회원 조회
     @Transactional(readOnly = true)
-    public List<UserFindResponse> findUsers(String name) {
+    public List<UserFindResponse> findUsers(Long sessionUserId, String name) {
 
-        List<User> users = userRepository.findAll(); //모든 회원 조회
+        List<User> users = userRepository.findAll();
         List<UserFindResponse> findUser = new ArrayList<>();
 
         if (name == null) {     //이름이 null이면 전체 조회
             for (User user : users) {
+                if (sessionUserId.equals(user.getId())) {   //본인은 모든 정보 포함
+                    findUser.add(new UserFindResponse(
+                            user.getId(),
+                            user.getEmail(),
+                            user.getName(),
+                            user.isPublic(),
+                            user.getCreatedAt(),
+                            user.getModifiedAt()
+                    ));
+                } else {
+                    findUser.add(new UserFindResponse(  //다른 유저는 민감 정보 제외
+                            user.getName(),
+                            user.isPublic(),
+                            user.getCreatedAt()
+                    ));
+                }
+            }
+            return findUser;
+        }
+
+        for (User user : users) {
+            if (name.equals(user.getName()) && sessionUserId.equals(user.getId())) {  //이름이 일치하는 회원만 조회
                 findUser.add(new UserFindResponse(
                         user.getId(),
                         user.getEmail(),
@@ -66,19 +88,11 @@ public class UserService {
                         user.getCreatedAt(),
                         user.getModifiedAt()
                 ));
-            }
-            return findUser;
-        }
-
-        for (User user : users) {
-            if (name.equals(user.getName())) {  //이름이 일치하는 회원만 조회
+            } else if (name.equals(user.getName())){
                 findUser.add(new UserFindResponse(
-                        user.getId(),
-                        user.getEmail(),
                         user.getName(),
                         user.isPublic(),
-                        user.getCreatedAt(),
-                        user.getModifiedAt()
+                        user.getCreatedAt()
                 ));
             }
         }

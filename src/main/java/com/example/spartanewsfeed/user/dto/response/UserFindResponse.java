@@ -28,4 +28,13 @@ public class UserFindResponse {
         this.modifiedAt = modifiedAt;
     }
 
+    public UserFindResponse(String name, boolean isPublic, LocalDateTime createAt){
+        this.id = null;
+        this.email = null;
+        this.name = name;
+        this.isPublic = isPublic;
+        this.createAt = createAt;
+        this.modifiedAt = null;
+    }
+
 }
