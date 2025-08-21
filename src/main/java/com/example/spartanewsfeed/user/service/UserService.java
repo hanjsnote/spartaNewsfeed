@@ -1,6 +1,7 @@
 package com.example.spartanewsfeed.user.service;
 
 import com.example.spartanewsfeed.common.config.PasswordEncoder;
+import com.example.spartanewsfeed.user.dto.request.UserDeleteRequest;
 import com.example.spartanewsfeed.user.dto.request.UserLoginRequest;
 import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
 import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
@@ -11,6 +12,7 @@ import com.example.spartanewsfeed.user.entity.User;
 import com.example.spartanewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -91,7 +93,7 @@ public class UserService {
 
         User users = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
 
-        if (!users.getPassword().equals(request.getOldPassword())) {    //사용자가 입력한 비밀번호가 userRepository에 저장된 비밀번호가 다르면 401 에러
+        if(!passwordEncoder.matches(request.getOldPassword(), users.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -109,17 +111,21 @@ public class UserService {
         );
     }
 
-    //회원 삭제
-    public void deleteUser(Long id) {
+    //회원 탈퇴
+    public void deleteUser(Long id, UserDeleteRequest request) {
 
-        userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
+        User user = userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        }
         userRepository.deleteById(id);
-
     }
 
     //로그인
     @Transactional(readOnly = true)
     public Long login(UserLoginRequest requestDto) {
+
         User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());   //이메일 존재 여부 확인
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {   //비밀번호 검증
