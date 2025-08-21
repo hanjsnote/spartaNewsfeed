@@ -100,7 +100,7 @@ public class UserService {
 
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
 
-        user.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
+        users.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
                 encodedNewPassword,

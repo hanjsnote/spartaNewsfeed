@@ -42,13 +42,14 @@ public class UserController {
     //회원 수정
     @PatchMapping("/{id}")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @Valid  @SessionAttribute("sessionKey") Long sessionUserId,  @PathVariable long id, @RequestBody UserUpdateRequest request) {
+            @Valid @SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id, @RequestBody UserUpdateRequest request) {
 
         return ResponseEntity.ok(userService.updateUser(sessionUserId, id, request));
     }
 
     //회원 탈퇴
     @DeleteMapping("/{id}")
+
     public ResponseEntity<Void> deleteUser(
             @SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id, @RequestBody UserDeleteRequest request) {
 

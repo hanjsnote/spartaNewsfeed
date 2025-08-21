@@ -1,13 +1,9 @@
 package com.example.spartanewsfeed.user.entity;
 
 import com.example.spartanewsfeed.common.entity.BaseEntity;
-import com.example.spartanewsfeed.follow.entity.Follow;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -28,12 +24,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followers = new HashSet<>();
-
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> following = new HashSet<>();
-
     private boolean isPublic;
 
     public User(String email, String name, String password){
@@ -49,13 +39,4 @@ public class User extends BaseEntity {
         this.password = password;
         this.isPublic = isPublic;
     }
-
-    public void addFollower(Follow follow){
-        this.followers.add(follow);
-    }
-
-    public void addFollowing(Follow follow){
-        this.following.add(follow);
-    }
-
 }
