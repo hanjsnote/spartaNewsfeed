@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,7 +17,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> createComment(
-            @SessionAttribute(name = "로그인 세션 속성명") Long userId,
+            @SessionAttribute(name = "sessionKey") Long userId,
             @PathVariable Long postId,
             @RequestBody RequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(userId, postId, requestDto)); // 201 Create
@@ -27,17 +26,27 @@ public class CommentController {
 
     @PatchMapping("/{commentId}") // 댓글 수정
     public ResponseEntity<ResponseDto> updateComment(
-            @SessionAttribute(name = "로그인 세션 속성명") Long userId,
+            @SessionAttribute(name = "sessionKey") Long userId,
             @PathVariable Long postId, // 쓸 곳이 없다.
             @PathVariable Long commentId,
             @RequestBody RequestDto requestDto) {
         return ResponseEntity.ok(commentService.updateComment(userId, commentId, requestDto)); // 200 OK
     }
 
+    /*
     @GetMapping // 댓글 조회
     public ResponseEntity<List<ResponseDto>> getComments(
             @PathVariable Long postId){
         return ResponseEntity.ok(commentService.commentAll(postId)); // 200 OK
+    }
+     */
+
+    @GetMapping // 댓글 조회 page 적용
+    public ResponseEntity<List<ResponseDto>> getComments(
+            @PathVariable Long postId,
+            @RequestParam(defaultValue = "0") int page, // page 파라미터를 받아 현재 페이지 번호를 지정
+            @RequestParam(defaultValue = "10") int size) { // 한 페이지에 보여줄 댓글의 수
+        return ResponseEntity.ok(commentService.commentAll(postId, page, size));
     }
 
     @GetMapping("/{commentId}")  // 댓글 단건 조회
@@ -49,7 +58,7 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @SessionAttribute(name = "로그인 세션 속성명") Long userId,
+            @SessionAttribute(name = "sessionKey") Long userId,
             @PathVariable Long postId, // 쓸 곳이 없다.
             @PathVariable Long commentId) {
         commentService.deleteCommentById(userId, commentId);
