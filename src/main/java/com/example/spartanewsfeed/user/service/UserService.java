@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,18 +85,24 @@ public class UserService {
     }
 
     //회원 정보 수정
-    public UserUpdateResponse updateUser(Long id, UserUpdateRequest request) {
+    public UserUpdateResponse updateUser(Long sessionUserId, Long id, UserUpdateRequest request) {
 
         User users = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
+
+        if (!id.equals(sessionUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 수정할 수 있습니다.");
+        }
 
         if (!users.getPassword().equals(request.getOldPassword())) {    //사용자가 입력한 비밀번호가 userRepository에 저장된 비밀번호가 다르면 401 에러
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
+        String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+
         users.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
-                request.getNewPassword(),
+                encodedNewPassword,
                 request.isPublic()
         );
 
@@ -110,15 +114,19 @@ public class UserService {
     }
 
     //회원 삭제
-    public void deleteUser(Long id) {
+    public void deleteUser(Long sessionUserId, Long id) {
 
         userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
+
+        if (!id.equals(sessionUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 삭제할 수 있습니다.");
+        }
+
         userRepository.deleteById(id);
 
     }
 
     //로그인
-    @Transactional(readOnly = true)
     public Long login(UserLoginRequest requestDto) {
         User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());   //이메일 존재 여부 확인
 
