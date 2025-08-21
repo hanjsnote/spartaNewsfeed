@@ -41,8 +41,8 @@ public class UserService {
 
         return new UserSignUpResponse( //응답 객체 생성
                 user.getId(),
-                user.getName(),
                 user.getEmail(),
+                user.getName(),
                 user.isPublic(),
                 user.getCreatedAt(),
                 user.getModifiedAt()
@@ -74,8 +74,8 @@ public class UserService {
             if (name.equals(user.getName())) {  //이름이 일치하는 회원만 조회
                 findUser.add(new UserFindResponse(
                         user.getId(),
-                        user.getName(),
                         user.getEmail(),
+                        user.getName(),
                         user.isPublic(),
                         user.getCreatedAt(),
                         user.getModifiedAt()
@@ -94,13 +94,17 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 수정할 수 있습니다.");
         }
 
-        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {   //새 비밀번호와 기존 비밀번호가 다르면 403 에러
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {   //비밀번호가 같으면 400 에러
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 비밀번호와 동일한 비밀번호로 수정할 수 없습니다.");
         }
 
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
 
-        users.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
+        user.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
                 encodedNewPassword,
@@ -124,7 +128,7 @@ public class UserService {
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {   //비밀번호 검증
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
         }
 
         userRepository.deleteById(id);
