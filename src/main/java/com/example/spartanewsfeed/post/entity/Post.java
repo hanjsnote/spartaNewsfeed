@@ -30,7 +30,7 @@ public class Post extends BaseEntity {
     좋아요 유/무와 좋아요 갯수 포함시켜야함
     단건 조회시 댓글도 포함시켜서 출력
      */
-
+    // 아직 라이크는 미구현이기 때문에 잠시 보류
     private int likeCount;
     public void addLike() {
         likeCount++;
