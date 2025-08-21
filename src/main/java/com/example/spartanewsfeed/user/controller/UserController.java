@@ -7,6 +7,7 @@ import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
 import com.example.spartanewsfeed.user.dto.response.UserFindResponse;
 import com.example.spartanewsfeed.user.dto.response.UserUpdateResponse;
 import com.example.spartanewsfeed.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class UserController {
 
     //회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<UserSignUpResponse> signUp(@RequestBody UserSignUpRequest request) {
+    public ResponseEntity<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest request) {
 
         UserSignUpResponse UserSignUpResponse = userService.signUp(request);
 
@@ -39,7 +40,7 @@ public class UserController {
 
     //회원 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable long id, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<UserUpdateResponse> updateUser(@Valid @PathVariable long id, @RequestBody UserUpdateRequest request) {
 
         return ResponseEntity.ok(userService.updateUser(id, request));
     }

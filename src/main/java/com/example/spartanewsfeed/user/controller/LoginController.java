@@ -4,6 +4,7 @@ import com.example.spartanewsfeed.user.dto.request.UserLoginRequest;
 import com.example.spartanewsfeed.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class LoginController {
 
     //로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginRequest requestDto, HttpServletRequest request){
+    public ResponseEntity<String> login(@Valid @RequestBody UserLoginRequest requestDto, HttpServletRequest request){
 
         Long id = userService.login(requestDto);
 
@@ -27,4 +28,16 @@ public class LoginController {
 
         return ResponseEntity.ok("로그인 성공");
     }
+
+    //로그아웃
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request){
+        //로그인 하지 않으면 HttpSession이 null로 반환
+        HttpSession session = request.getSession(false);
+        if(session != null){
+            session.invalidate();   //해당 세션(데이터)를 삭제
+        }
+    }
+
+
 }
