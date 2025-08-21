@@ -1,6 +1,7 @@
 package com.example.spartanewsfeed.user.service;
 
 import com.example.spartanewsfeed.common.config.PasswordEncoder;
+import com.example.spartanewsfeed.user.dto.request.UserDeleteRequest;
 import com.example.spartanewsfeed.user.dto.request.UserLoginRequest;
 import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
 import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
@@ -87,13 +88,13 @@ public class UserService {
     //회원 정보 수정
     public UserUpdateResponse updateUser(Long sessionUserId, Long id, UserUpdateRequest request) {
 
-        User users = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
+        User user = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
 
-        if (!id.equals(sessionUserId)) {
+        if (!id.equals(sessionUserId)) {    //본인의 계정이 아니면 403 에러
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 수정할 수 있습니다.");
         }
 
-        if (!users.getPassword().equals(request.getOldPassword())) {    //사용자가 입력한 비밀번호가 userRepository에 저장된 비밀번호가 다르면 401 에러
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
@@ -107,19 +108,23 @@ public class UserService {
         );
 
         return new UserUpdateResponse(
-                users.getEmail(),
-                users.getName(),
-                users.isPublic()
+                user.getEmail(),
+                user.getName(),
+                user.isPublic()
         );
     }
 
     //회원 삭제
-    public void deleteUser(Long sessionUserId, Long id) {
+    public void deleteUser(Long sessionUserId, Long id, UserDeleteRequest request) {
 
-        userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
+        User user = userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
 
-        if (!id.equals(sessionUserId)) {
+        if (!id.equals(sessionUserId)) {    //본인의 계정이 아니면 403 에러
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 삭제할 수 있습니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {   //비밀번호 검증
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
 
         userRepository.deleteById(id);
@@ -133,6 +138,7 @@ public class UserService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {   //비밀번호 검증
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         }
+
         return user.getId();
     }
 }
