@@ -40,16 +40,17 @@ public class UserController {
 
     //회원 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUser(@Valid @PathVariable long id, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<UserUpdateResponse> updateUser(
+            @Valid @SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id, @RequestBody UserUpdateRequest request) {
 
-        return ResponseEntity.ok(userService.updateUser(id, request));
+        return ResponseEntity.ok(userService.updateUser(sessionUserId, id, request));
     }
 
     //회원 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
+    public ResponseEntity<Void> deleteUser(@SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id) {
 
-        userService.deleteUser(id);
+        userService.deleteUser(sessionUserId, id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
