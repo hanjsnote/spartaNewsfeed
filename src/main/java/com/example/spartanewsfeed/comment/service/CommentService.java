@@ -1,7 +1,7 @@
 package com.example.spartanewsfeed.comment.service;
 
-import com.example.spartanewsfeed.comment.dto.request.RequestDto;
-import com.example.spartanewsfeed.comment.dto.response.ResponseDto;
+import com.example.spartanewsfeed.comment.dto.request.CommentRequest;
+import com.example.spartanewsfeed.comment.dto.response.CommentResponse;
 import com.example.spartanewsfeed.comment.entity.Comment;
 import com.example.spartanewsfeed.comment.repository.CommentRepository;
 import com.example.spartanewsfeed.post.entity.Post;
@@ -10,7 +10,6 @@ import com.example.spartanewsfeed.user.entity.User;
 import com.example.spartanewsfeed.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,8 +23,8 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    private ResponseDto convertToResponseDto(Comment comment) {
-        return new ResponseDto(
+    private CommentResponse convertToResponseDto(Comment comment) {
+        return new CommentResponse(
                 comment.getId(),
                 comment.getUser().getId(),
                 comment.getPost().getId(),
@@ -36,21 +35,21 @@ public class CommentService {
     }
 
     @Transactional // 댓글 작성
-    public ResponseDto createComment(Long userId, Long postId, RequestDto requestDto) {
+    public CommentResponse createComment(Long userId, Long postId, CommentRequest commentRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 user id 없습니다. "));
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 post id 없습니다."));
-        Comment newComment = new Comment(user, post, requestDto.getContent());
+        Comment newComment = new Comment(user, post, commentRequest.getContent());
         Comment savedComment = commentRepository.save(newComment);
         return convertToResponseDto(savedComment);
     }
 
     @Transactional // 댓글 수정
-    public ResponseDto updateComment(Long userId, Long commentId, RequestDto requestDto) {
+    public CommentResponse updateComment(Long userId, Long commentId, CommentRequest commentRequest) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 comment id 없습니다. "));
         if(!comment.getUser().getId().equals(userId)){
             throw new IllegalArgumentException("댓글을 수정할 권한이 없습니다.");
         } // session 유저 id와 comment와 연관관계를 맺은 유저 id를 비교
-        comment.commentUpdate(requestDto.getContent());
+        comment.commentUpdate(commentRequest.getContent());
         return convertToResponseDto(comment);
     }
 
@@ -67,19 +66,19 @@ public class CommentService {
     }
     */
     @Transactional// 댓글 조회 page 적용
-    public List<ResponseDto> commentAll(Long postId, int page, int size) {
+    public List<CommentResponse> commentAll(Long postId, int page, int size) {
         postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 post id 없습니다.")); // 이 코드가 필요한지 잘 모르겠다.
         Pageable pageable = PageRequest.of(page, size); // page 객체를 생성
         List<Comment> commentList = commentRepository.findByPost_Id(postId, pageable);
-        List<ResponseDto> responseDtoList = new ArrayList<>();
+        List<CommentResponse> commentResponseList = new ArrayList<>();
         for (Comment comment : commentList) {
-            responseDtoList.add(convertToResponseDto(comment));
+            commentResponseList.add(convertToResponseDto(comment));
         }
-        return responseDtoList;
+        return commentResponseList;
     }
 
     @Transactional // 댓글 단건 조회
-    public ResponseDto findCommentById(Long commentId){
+    public CommentResponse findCommentById(Long commentId){
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("해당 comment id 없습니다. "));
         return convertToResponseDto(comment);
     }
