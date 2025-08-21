@@ -53,18 +53,6 @@ public class CommentService {
         return convertToResponseDto(comment);
     }
 
-    /*
-    @Transactional // 댓글 조회
-    public List<ResponseDto> commentAll(Long postId){ // 여기서의 id는 post의 id를 의미하며, post에 적힌 댓글을 모두 출력
-        postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 post id 없습니다.")); // 이 코드가 필요한지 잘 모르겠다.
-        List<Comment> commentList = commentRepository.findByPost_Id(postId);
-        List<ResponseDto> responseDtoList = new ArrayList<>();
-        for (Comment comment : commentList) {
-            responseDtoList.add(convertToResponseDto(comment));
-        }
-        return responseDtoList;
-    }
-    */
     @Transactional// 댓글 조회 page 적용
     public List<CommentResponse> commentAll(Long postId, int page, int size) {
         postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 post id 없습니다.")); // 이 코드가 필요한지 잘 모르겠다.
