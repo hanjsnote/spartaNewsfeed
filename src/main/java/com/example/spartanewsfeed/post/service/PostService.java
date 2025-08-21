@@ -1,5 +1,6 @@
 package com.example.spartanewsfeed.post.service;
 
+import com.example.spartanewsfeed.like.repository.LikeRepository;
 import com.example.spartanewsfeed.post.dto.request.PatchRequest;
 import com.example.spartanewsfeed.post.dto.request.PostRequest;
 import com.example.spartanewsfeed.post.dto.response.GetResponse;
@@ -29,9 +30,13 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
     // 게시물 작성
     public PostResponse createPost(Long userId, PostRequest postRequest) {
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인을 먼저 해주세요!");
+        }
         User user = userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
                 // 존재하지 않는 유저라면 예외 처리
                 () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
@@ -88,19 +93,29 @@ public class PostService {
 //        return GetResponses;
 //    }
 
+    /*
+   [ ]  **뉴스피드 조회 기능**
+   - 기본 정렬은 생성일자 ****기준으로 내림차순 정렬합니다.
+   10개씩 페이지네이션하여, 각 페이지 당 뉴스피드 데이터가 10개씩 나오게 합니다.
+   N+1문제 고려해야한다.
+    */
+
     // 게시글 전체 조회
     @Transactional(readOnly = true)
     public Page<GetResponse> postAll(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // 생성일 기준 정렬
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // 수정일 기준 정렬
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
 
         Page<Post> posts;
-        if(userId != null) {
-            if(!userRepository.existsById(userId)) {
-                throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
+        if (userId != null) { // 아이디 값이 존재 한다면
+            if (!userRepository.existsById(userId)) { // 입력 받은 아이디가 회원으로 등록된 아이디가 아니라면..
+                throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");  // 예외 처리
             }
-            posts = postRepository.findAllByUserId(userId, pageable);
+            posts = postRepository.findAllByUserId(userId, pageable); // 존재한다면 아이디 기준으로 전체 조회
         } else {
-            posts = postRepository.findAll(pageable);
+            posts = postRepository.findAll(pageable); // 아이디 값이 없다면 전체 조회
         }
 
         Set<Long> userIds = posts.stream()
@@ -116,8 +131,8 @@ public class PostService {
                     .filter(users -> users.getId().equals(id))
                     .findFirst()
                     .orElseThrow(
-                    () -> new IllegalArgumentException("유저가 없습니다.")
-            );
+                            () -> new IllegalArgumentException("유저가 없습니다.")
+                    );
 
             return new GetResponse(
                     post.getId(),
@@ -132,18 +147,42 @@ public class PostService {
         });
     }
 
+    /*
+    로그인 하지 않았다면 조회 불가
+     */
+
+    //    // 게시글 단건 조회
+//    @Transactional(readOnly = true)
+//    public GetResponse findPostById(Long userId, Long id) {
+//        userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
+//                // 존재하지 않는 유저라면 예외 처리
+//                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
+//        );
+//
+//        Post post = postRepository.findById(id).orElseThrow(
+//                () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
+//        );
+//
+//        return new GetResponse(
+//                post.getId(),
+//                post.getUser().getId(), // 유저 아이디
+//                post.getUser().getName(), // 유저명
+//                post.getTitle(),
+//                post.getContent(),
+//                post.getCreatedAt(),
+//                post.getModifiedAt(),
+//                post.getLikeCount()
+//        );
+//    }
 
     // 게시글 단건 조회
     @Transactional(readOnly = true)
-    public GetResponse findPostById(Long userId, Long id) {
-        userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
-                // 존재하지 않는 유저라면 예외 처리
-                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
-        );
+    public GetResponse findPostById(Long id) {
 
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
         );
+        int likeCount = likeRepository.countByPost(post);
 
         return new GetResponse(
                 post.getId(),
@@ -153,12 +192,18 @@ public class PostService {
                 post.getContent(),
                 post.getCreatedAt(),
                 post.getModifiedAt(),
-                post.getLikeCount()
+                likeCount
         );
     }
+    /*
+    본인이 아니라면 수정 불가
+     */
 
     // 게시글 수정
     public PatchResponse updatePost(Long userId, Long id, PatchRequest patchRequest) {
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인을 먼저 해주세요!");
+        }
         userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
                 // 존재하지 않는 유저라면 예외 처리
                 () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
@@ -186,11 +231,17 @@ public class PostService {
         );
     }
 
+    /*
+    해당 유저가 아니라면 삭제 불가
+     */
     public void deletePost(Long userId, Long id) {
-        userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
-                // 존재하지 않는 유저라면 예외 처리
-                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
-        );
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인을 먼저 해주세요!");
+        }
+//        userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직 //로그인을 이미 했기에 불 필요하다.
+//                // 존재하지 않는 유저라면 예외 처리
+//                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
+//        );
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
         );
