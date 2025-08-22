@@ -1,6 +1,7 @@
 package com.example.spartanewsfeed.like.service;
 
 import com.example.spartanewsfeed.common.exception.DataNotFoundException;
+import com.example.spartanewsfeed.common.exception.NoPermissionException;
 import com.example.spartanewsfeed.like.dto.LikeResponse;
 import com.example.spartanewsfeed.like.entity.Like;
 import com.example.spartanewsfeed.like.repository.LikeRepository;
@@ -40,13 +41,23 @@ public class LikeService {
     // 필요 파라미터 - 현재 세션의 유저 ID(getSessionAttribute), 접속한 게시물의 ID(URI 에서 받음)
     @Transactional
     public void toggleLike(Long postId, Long sessionId) {
+
+        // 존재하는가 아닌가의 값입니다.
         boolean exists = likeRepository.existsByPostIdAndUserId(postId, sessionId);
+
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new DataNotFoundException("게시물을 찾을 수 없습니다.")
         );
         User user = userRepository.findById(sessionId).orElseThrow(
                 () -> new DataNotFoundException("로그인 정보를 확인해주세요.")
         );
+
+        // 좋아요를 누른 글이 자신의 글인지 확인하고, 만약 자신의 글에 좋아요를 누른 것이라면 예외를 던집니다.
+        if (post.getUser().getId().equals(user.getId())) {
+            throw new NoPermissionException("자신의 글에는 좋아요를 누를 수 없습니다.");
+        }
+
+        // 존재하지 않는다면 새로운 객체를 만들고, 존재한다면 객체를 삭제합니다.
         if (!exists) {
             likeRepository.save(new Like(user, post));
         } else {
