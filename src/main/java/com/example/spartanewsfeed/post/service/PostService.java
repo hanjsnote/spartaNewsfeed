@@ -1,11 +1,16 @@
 package com.example.spartanewsfeed.post.service;
 
+import com.example.spartanewsfeed.comment.dto.response.PostCommentResponse;
+import com.example.spartanewsfeed.comment.entity.Comment;
+import com.example.spartanewsfeed.comment.repository.CommentRepository;
+import com.example.spartanewsfeed.follow.repository.FollowRepository;
 import com.example.spartanewsfeed.like.repository.LikeRepository;
 import com.example.spartanewsfeed.post.dto.request.PatchRequest;
 import com.example.spartanewsfeed.post.dto.request.PostRequest;
 import com.example.spartanewsfeed.post.dto.response.GetResponse;
 import com.example.spartanewsfeed.post.dto.response.PatchResponse;
 import com.example.spartanewsfeed.post.dto.response.PostResponse;
+import com.example.spartanewsfeed.post.dto.response.SingleGetResponse;
 import com.example.spartanewsfeed.post.entity.Post;
 import com.example.spartanewsfeed.post.repository.PostRepository;
 import com.example.spartanewsfeed.user.entity.User;
@@ -30,6 +35,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     // 게시물 작성
     public PostResponse createPost(Long userId, PostRequest postRequest) {
@@ -114,16 +121,32 @@ public class PostService {
     /*
     로그인 하지 않았다면 조회 불가
      */
+
+    /*
+    팔로우의 게시글 조회기능
+     */
     // 게시글 단건 조회
     @Transactional(readOnly = true)
-    public GetResponse findPostById(Long id) {
+    public SingleGetResponse findPostById(Long id, int page, int size) {
 
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
         );
         int likeCount = likeRepository.countByPost(post);
+        // 페이지 네이션 수정일 기준으로 정렬
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        Page<Comment> comments = commentRepository.findByPost(post, pageable);
 
-        return new GetResponse(
+        List<PostCommentResponse> commentResponses = comments.stream()
+                .map(comment -> new PostCommentResponse(
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getCreatedAt(),
+                        comment.getModifiedAt()
+                ))
+                .toList();
+
+        return new SingleGetResponse(
                 post.getId(),
                 post.getUser().getId(), // 유저 아이디
                 post.getUser().getName(), // 유저명
@@ -131,7 +154,9 @@ public class PostService {
                 post.getContent(),
                 post.getCreatedAt(),
                 post.getModifiedAt(),
-                likeCount
+                likeCount,
+                commentResponses
+                // 댓글 리스트
         );
     }
     /*

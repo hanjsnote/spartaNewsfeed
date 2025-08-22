@@ -5,6 +5,7 @@ import com.example.spartanewsfeed.post.dto.request.PostRequest;
 import com.example.spartanewsfeed.post.dto.response.GetResponse;
 import com.example.spartanewsfeed.post.dto.response.PatchResponse;
 import com.example.spartanewsfeed.post.dto.response.PostResponse;
+import com.example.spartanewsfeed.post.dto.response.SingleGetResponse;
 import com.example.spartanewsfeed.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +42,12 @@ public class PostController {
 
     // 단건 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<GetResponse> getPostById(
-            @PathVariable Long postId
+    public ResponseEntity<SingleGetResponse> getPostById(
+            @PathVariable Long postId,
+            @RequestParam(defaultValue = "0") int page, // 댓글의 페이지 네이션
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(postService.findPostById(postId));
+        return ResponseEntity.ok(postService.findPostById(postId, page, size));
     }
 
     // 게시물 수정
