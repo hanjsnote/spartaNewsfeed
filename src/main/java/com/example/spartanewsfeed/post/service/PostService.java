@@ -3,14 +3,12 @@ package com.example.spartanewsfeed.post.service;
 import com.example.spartanewsfeed.comment.dto.response.PostCommentResponse;
 import com.example.spartanewsfeed.comment.entity.Comment;
 import com.example.spartanewsfeed.comment.repository.CommentRepository;
+import com.example.spartanewsfeed.follow.entity.Follow;
 import com.example.spartanewsfeed.follow.repository.FollowRepository;
 import com.example.spartanewsfeed.like.repository.LikeRepository;
 import com.example.spartanewsfeed.post.dto.request.PatchRequest;
 import com.example.spartanewsfeed.post.dto.request.PostRequest;
-import com.example.spartanewsfeed.post.dto.response.GetResponse;
-import com.example.spartanewsfeed.post.dto.response.PatchResponse;
-import com.example.spartanewsfeed.post.dto.response.PostResponse;
-import com.example.spartanewsfeed.post.dto.response.SingleGetResponse;
+import com.example.spartanewsfeed.post.dto.response.*;
 import com.example.spartanewsfeed.post.entity.Post;
 import com.example.spartanewsfeed.post.repository.PostRepository;
 import com.example.spartanewsfeed.user.entity.User;
@@ -119,12 +117,42 @@ public class PostService {
     }
 
     /*
-    로그인 하지 않았다면 조회 불가
+    팔로워의 게시글 전체조회기능  // follower가 유저고, following이 상대방
      */
+    @Transactional(readOnly = true)
+    public Page<FollowerGetResponse> findFollowings(Long userId, Integer page, Integer size) {
+        // 수정일 기준 정렬
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
 
-    /*
-    팔로우의 게시글 조회기능
-     */
+        // followerId 즉, 자신의 아이디를 기준으로 팔로윙(상대)의 리스트를 생성.
+        List<Follow> followings = followRepository.findByFollowerId(userId);
+
+        /*
+        List를 먼저 Steam으로 변환한 후
+        map으로 stream을 다시 Long으로 변환 (유저가 팔로우한 상대방 following의 id를 가져옴
+        toList로 다시 List로 변환
+         */
+        List<Long> followingIds = followings.stream()
+                .map(follow -> follow.getFollowing().getId())
+                .toList();
+
+        if (followingIds.isEmpty()) {
+            throw new IllegalArgumentException("팔로우한 계정이 없습니다.");
+        }
+
+        Page<Post> posts = postRepository.findAllByUserIdIn(followingIds, pageable);
+
+        return posts.map(post -> new FollowerGetResponse(
+                post.getId(), // 게시글 아이디
+                post.getUser().getId(), // 상대방의 아이디
+                userId, // 로그인 유저의 아이디
+                post.getUser().getName(),
+                post.getTitle(),
+                post.getCreatedAt(),
+                post.getModifiedAt()
+        ));
+    }
+
     // 게시글 단건 조회
     @Transactional(readOnly = true)
     public SingleGetResponse findPostById(Long id, int page, int size) {
