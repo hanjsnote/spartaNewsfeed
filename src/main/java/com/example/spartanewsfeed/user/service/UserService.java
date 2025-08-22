@@ -115,7 +115,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
         }
 
-        if (!passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {   //비밀번호가 같으면 400 에러
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {   //비밀번호가 같으면 400 에러
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 비밀번호와 동일한 비밀번호로 수정할 수 없습니다.");
         }
 
