@@ -3,6 +3,8 @@ package com.example.spartanewsfeed.post.service;
 import com.example.spartanewsfeed.comment.dto.response.PostCommentResponse;
 import com.example.spartanewsfeed.comment.entity.Comment;
 import com.example.spartanewsfeed.comment.repository.CommentRepository;
+import com.example.spartanewsfeed.common.exception.DataNotFoundException;
+import com.example.spartanewsfeed.common.exception.NoPermissionException;
 import com.example.spartanewsfeed.follow.entity.Follow;
 import com.example.spartanewsfeed.follow.repository.FollowRepository;
 import com.example.spartanewsfeed.like.repository.LikeRepository;
@@ -37,14 +39,12 @@ public class PostService {
     private final FollowRepository followRepository;
 
     // 게시물 작성
+    /*
+    로그인에서 이미 검증을 진행했기 때문에 추가적인 검증은 필요없다..
+     */
     public PostResponse createPost(Long userId, PostRequest postRequest) {
-        if (userId == null) {
-            throw new IllegalArgumentException("로그인을 먼저 해주세요!");
-        }
-        User user = userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
-                // 존재하지 않는 유저라면 예외 처리
-                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
-        );
+        User user = userRepository.getReferenceById(userId);
+
         Post post = new Post( // 포스트 객체 생성
                 postRequest.getTitle(),
                 postRequest.getContent(),
@@ -80,11 +80,15 @@ public class PostService {
         Page<Post> posts;
         if (userId != null) { // 아이디 값이 존재 한다면
             if (!userRepository.existsById(userId)) { // 입력 받은 아이디가 회원으로 등록된 아이디가 아니라면..
-                throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");  // 예외 처리
+                throw new DataNotFoundException("해당 유저가 존재하지 않습니다.");  // 예외 처리
             }
             posts = postRepository.findAllByUserId(userId, pageable); // 존재한다면 아이디 기준으로 전체 조회
         } else {
             posts = postRepository.findAll(pageable); // 아이디 값이 없다면 전체 조회
+        }
+
+        if (posts.isEmpty()) { // 게시물이 존재하지 않을 경우
+            throw new DataNotFoundException("해당 게시물이 존재하지 않습니다.");
         }
 
         // n+1 문제 해결 방안
@@ -102,7 +106,7 @@ public class PostService {
                     .filter(users -> users.getId().equals(id))
                     .findFirst()
                     .orElseThrow(
-                            () -> new IllegalArgumentException("유저가 없습니다.")
+                            () -> new DataNotFoundException("해당 유저가 존재하지 않습니다.")
                     );
 
             return new GetResponse(
@@ -138,11 +142,11 @@ public class PostService {
                 .map(follow -> follow.getFollowing().getId())
                 .toList();
 
-        if (followingIds.isEmpty()) {
-            throw new IllegalArgumentException("팔로우한 계정이 없습니다.");
-        }
-
         Page<Post> posts = postRepository.findAllByUserIdIn(followingIds, pageable);
+
+        if (posts.isEmpty()) {
+            throw new DataNotFoundException("해당 게시물이 존재하지 않습니다.");
+        }
 
         return posts.map(post -> {
             int likeCount = likeRepository.countByPost(post);
@@ -153,6 +157,7 @@ public class PostService {
                     userId, // 로그인 유저의 아이디
                     post.getUser().getName(),
                     post.getTitle(),
+                    post.getContent(),
                     post.getCreatedAt(),
                     post.getModifiedAt(),
                     likeCount
@@ -166,9 +171,11 @@ public class PostService {
     public SingleGetResponse findPostById(Long id, int page, int size) {
 
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
+                () -> new DataNotFoundException("해당 게시물이 존재하지 않습니다.")
         );
+
         int likeCount = likeRepository.countByPost(post);
+
         // 페이지 네이션 수정일 기준으로 정렬
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         Page<Comment> comments = commentRepository.findByPost(post, pageable);
@@ -176,6 +183,8 @@ public class PostService {
         List<PostCommentResponse> commentResponses = comments.stream()
                 .map(comment -> new PostCommentResponse(
                         comment.getId(),
+                        comment.getUser().getId(),
+                        comment.getUser().getName(),
                         comment.getContent(),
                         comment.getCreatedAt(),
                         comment.getModifiedAt()
@@ -195,31 +204,26 @@ public class PostService {
                 // 댓글 리스트
         );
     }
+
     /*
     본인이 아니라면 수정 불가
      */
-
     // 게시글 수정
     public PatchResponse updatePost(Long userId, Long id, PatchRequest patchRequest) {
-        if (userId == null) {
-            throw new IllegalArgumentException("로그인을 먼저 해주세요!");
-        }
-        userRepository.findById(userId).orElseThrow( // 유저 아이디 검증 로직
-                // 존재하지 않는 유저라면 예외 처리
-                () -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")
-        );
+
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
+                () -> new DataNotFoundException("해당 게시물이 존재하지 않습니다.")
         );
+
         if (!userId.equals(post.getUser().getId())) {
-            throw new IllegalArgumentException(
-                    "해당 게시글을 작성한 유저가 아니라 수정이 불가능합니다."
-            );
+            throw new NoPermissionException("해당 게시글을 작성한 유저가 아니라 수정이 불가능합니다.");
         }
+
         post.updatePost(
                 patchRequest.getTitle(),
                 patchRequest.getContent()
         );
+
         return new PatchResponse(
                 post.getId(),
                 post.getUser().getId(), // 유저 아이디
@@ -237,11 +241,13 @@ public class PostService {
     public void deletePost(Long userId, Long id) {
 
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 아이디의 게시물은 존재하지 않습니다.")
+                () -> new DataNotFoundException("해당 게시물이 존재하지 않습니다.")
         );
+
         if (!userId.equals(post.getUser().getId())) {
-            throw new IllegalArgumentException("게시글을 작성한 유저가 아니기 때문에 삭제할 수 없습니다.");
+            throw new NoPermissionException("해당 게시글을 작성한 유저가 아니라 수정이 불가능합니다.");
         }
+
         postRepository.deleteByUserIdAndId(userId, id);
     }
 }

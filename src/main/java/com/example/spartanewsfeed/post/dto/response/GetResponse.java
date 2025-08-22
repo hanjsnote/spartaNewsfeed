@@ -15,7 +15,6 @@ public class GetResponse {
     private final LocalDateTime modified;
     private final int likeCount; // 좋아요 갯수
 
-
     public GetResponse(Long id,
                        Long userId,
                        String name,

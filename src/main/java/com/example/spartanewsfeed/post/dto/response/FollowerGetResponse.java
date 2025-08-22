@@ -11,6 +11,7 @@ public class FollowerGetResponse {
     private final Long followerId;
     private final String name;
     private final String title;
+    private final String content;
     private final LocalDateTime created;
     private final LocalDateTime modified;
     private final int likeCount; // 좋아요 갯수
@@ -20,6 +21,7 @@ public class FollowerGetResponse {
                                Long followerId,
                                String name,
                                String title,
+                               String content,
                                LocalDateTime created,
                                LocalDateTime modified,
                                int likeCount
@@ -29,6 +31,7 @@ public class FollowerGetResponse {
         this.followerId = followerId;
         this.name = name;
         this.title = title;
+        this.content = content;
         this.created = created;
         this.modified = modified;
         this.likeCount = likeCount;
