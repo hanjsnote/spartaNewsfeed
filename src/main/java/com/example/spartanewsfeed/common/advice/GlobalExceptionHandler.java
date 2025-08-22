@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
 
     // GlobalException을 상속받은 예외가 발생하면 아래의 핸들러가 작동됩니다.
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<ErrorResponse> handlerGlobalException(DataNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handlerGlobalException(GlobalException ex, HttpServletRequest request) {
         HttpStatus status = ex.getHttpStatus();
         ErrorResponse response = new ErrorResponse(
                 status,
