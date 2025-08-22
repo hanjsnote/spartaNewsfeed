@@ -5,6 +5,8 @@ import com.example.spartanewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -24,6 +26,7 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY) // 유저를 필요할 때만 가져오겠다
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     public Post(String title, String content, User user) {
