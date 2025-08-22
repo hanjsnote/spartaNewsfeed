@@ -1,9 +1,6 @@
 package com.example.spartanewsfeed.like.dto;
 
-import com.example.spartanewsfeed.like.entity.Like;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 public class LikeResponse {
