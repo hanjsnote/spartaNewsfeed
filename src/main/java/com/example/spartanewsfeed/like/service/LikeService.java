@@ -27,7 +27,7 @@ public class LikeService {
     // Post의 ID를 기준으로 좋아요를 겁색합니다.
     @Transactional(readOnly = true)
     public List<LikeResponse> getLikes(Long postId) {
-        List<Like> likes = likeRepository.findByPostId(postId);
+        List<Like> likes = likeRepository.findAllByPostId(postId);
         return likes.stream().map(
                 like -> new LikeResponse(
                         like.getLikeId(),
