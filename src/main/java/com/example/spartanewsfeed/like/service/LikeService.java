@@ -42,15 +42,15 @@ public class LikeService {
     @Transactional
     public String toggleLike(Long postId, Long userId) {
 
-        // 존재하는가 아닌가의 값입니다.
-        boolean exists = likeRepository.existsByPostIdAndUserId(postId, userId);
-
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new DataNotFoundException("게시물이 존재하지 않습니다.")
         );
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new DataNotFoundException("로그인 정보를 확인해주세요.")
         );
+
+        // 존재하는가 아닌가의 값입니다.
+        boolean exists = likeRepository.existsByPostIdAndUserId(postId, userId);
 
         // 좋아요를 누른 글이 자신의 글인지 확인하고, 만약 자신의 글에 좋아요를 누른 것이라면 예외를 던집니다.
         if (post.getUser().getId().equals(user.getId())) {
