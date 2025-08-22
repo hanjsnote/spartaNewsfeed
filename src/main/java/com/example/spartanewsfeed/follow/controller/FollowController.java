@@ -16,25 +16,17 @@ public class FollowController {
 
     @PostMapping("/{followingId}/follow")
     public ResponseEntity<FollowResponse> follow(@PathVariable Long followingId, HttpServletRequest request) {
-        try {
-            Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
+        Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
 
-            followService.followUser(followerId, followingId);
-            return ResponseEntity.ok(new FollowResponse("팔로우했습니다."));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new FollowResponse(e.getMessage()));
-        }
+        followService.followUser(followerId, followingId);
+        return ResponseEntity.ok(new FollowResponse("팔로우했습니다."));
     }
 
     @DeleteMapping("/{followingId}/follow")
     public ResponseEntity<FollowResponse> unfollow(@PathVariable Long followingId, HttpServletRequest request) {
-        try {
-            Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
+        Long followerId = (Long) request.getSession(false).getAttribute("sessionKey");
 
-            followService.unfollowUser(followerId, followingId);
-            return ResponseEntity.ok(new FollowResponse("언팔로우됐습니다."));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new FollowResponse(e.getMessage()));
-        }
+        followService.unfollowUser(followerId, followingId);
+        return ResponseEntity.ok(new FollowResponse("언팔로우됐습니다."));
     }
 }
