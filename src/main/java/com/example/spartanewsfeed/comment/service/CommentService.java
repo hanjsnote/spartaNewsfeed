@@ -10,6 +10,7 @@ import com.example.spartanewsfeed.post.entity.Post;
 import com.example.spartanewsfeed.post.repository.PostRepository;
 import com.example.spartanewsfeed.user.entity.User;
 import com.example.spartanewsfeed.user.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,8 @@ public class CommentService {
     @Transactional(readOnly = true) //댓글 조회 page 적용
     public List<CommentResponse> commentAll(Long postId, int page, int size) {
         postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("해당 게시글이 존재하지 않습니다."));
-        Pageable pageable = PageRequest.of(page, size); // page 객체를 생성
+        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedAt");
+        Pageable pageable = PageRequest.of(page, size, sort); // page 객체를 생성
         List<Comment> commentList = commentRepository.findByPost_Id(postId, pageable);
         List<CommentResponse> commentResponseList = new ArrayList<>();
         for (Comment comment : commentList) {

@@ -5,6 +5,8 @@ import com.example.spartanewsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -18,10 +20,12 @@ public class Follow extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "follower_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User follower;
 
     @ManyToOne
     @JoinColumn(name = "following_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User following;
 
     public Follow(User follower, User following){
