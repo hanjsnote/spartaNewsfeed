@@ -16,7 +16,7 @@ public class SingleGetResponse {
     private final LocalDateTime created;
     private final LocalDateTime modified;
     private final int likeCount; // 좋아요 갯수
-    private List<PostCommentResponse> comments;
+    private final List<PostCommentResponse> comments;
 
 
     public SingleGetResponse(Long id,
