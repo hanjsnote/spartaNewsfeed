@@ -13,6 +13,7 @@ public class FollowerGetResponse {
     private final String title;
     private final LocalDateTime created;
     private final LocalDateTime modified;
+    private final int likeCount; // 좋아요 갯수
 
     public FollowerGetResponse(Long id,
                                Long userId,
@@ -20,7 +21,8 @@ public class FollowerGetResponse {
                                String name,
                                String title,
                                LocalDateTime created,
-                               LocalDateTime modified
+                               LocalDateTime modified,
+                               int likeCount
     ) {
         this.id = id;
         this.userId = userId;
@@ -29,6 +31,7 @@ public class FollowerGetResponse {
         this.title = title;
         this.created = created;
         this.modified = modified;
+        this.likeCount = likeCount;
     }
 
 }
