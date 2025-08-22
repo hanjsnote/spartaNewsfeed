@@ -12,7 +12,7 @@ public class CommentResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public CommentResponse(Long id, long userId, long postId, String content, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public CommentResponse(Long id, long userId, long postId, String content, LocalDateTime createdAt, LocalDateTime modifiedAt ) {
         this.id = id;
         this.userId = userId;
         this.postId = postId;

@@ -11,7 +11,7 @@ public class PostCommentResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public PostCommentResponse(Long id, Long userId, String name, String content,  LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public PostCommentResponse(Long id, Long userId, String name, String content,  LocalDateTime createdAt, LocalDateTime modifiedAt ) {
         this.id = id;
         this.userId = userId;
         this.userName = name;
