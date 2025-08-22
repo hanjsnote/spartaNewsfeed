@@ -8,7 +8,9 @@ import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
 import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
 import com.example.spartanewsfeed.user.dto.response.UserFindResponse;
 import com.example.spartanewsfeed.user.dto.response.UserUpdateResponse;
+import com.example.spartanewsfeed.user.entity.DeletedEmail;
 import com.example.spartanewsfeed.user.entity.User;
+import com.example.spartanewsfeed.user.repository.DeletedEmailRepository;
 import com.example.spartanewsfeed.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final DeletedEmailRepository deletedEmailRepository;  //탈퇴한 사용자 이메일 Repository
     private final PasswordEncoder passwordEncoder;
 
     //회원 가입
@@ -33,6 +36,10 @@ public class UserService {
 
         if (userRepository.existsByEmail(request.getEmail())) {     //이메일 중복 확인
             throw new IllegalArgumentException("해당 이메일은 이미 사용중입니다.");
+        }
+
+        if (deletedEmailRepository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "탈퇴한 이메일 입니다.");
         }
 
         //User 엔티티 생성 후 저장
@@ -145,8 +152,10 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
         }
 
-        userRepository.deleteById(id);
+        DeletedEmail deletedEmail = new DeletedEmail(user.getEmail());
+        deletedEmailRepository.save(deletedEmail);    //탈퇴한 사용자 이메일 저장
 
+        userRepository.deleteById(id);
     }
 
     //로그인
