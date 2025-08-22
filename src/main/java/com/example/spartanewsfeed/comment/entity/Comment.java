@@ -4,17 +4,18 @@ import com.example.spartanewsfeed.common.entity.BaseEntity;
 import com.example.spartanewsfeed.post.entity.Post;
 import com.example.spartanewsfeed.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Getter ;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "comment")
+@Table(name = "comments")
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

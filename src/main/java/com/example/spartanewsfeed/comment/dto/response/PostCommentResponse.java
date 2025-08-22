@@ -1,7 +1,6 @@
 package com.example.spartanewsfeed.comment.dto.response;
 
-import lombok.Getter;
-
+import lombok.Getter ;
 import java.time.LocalDateTime;
 
 @Getter
