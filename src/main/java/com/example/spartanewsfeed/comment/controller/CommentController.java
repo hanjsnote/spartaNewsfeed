@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -43,7 +44,7 @@ public class CommentController {
     @GetMapping("/{commentId}")  // 댓글 단건 조회
     public ResponseEntity<CommentResponse> getCommentById(
             @PathVariable Long postId, // 쓸 곳이 없다.
-            @PathVariable Long commentId){
+            @PathVariable Long commentId) {
         return ResponseEntity.ok(commentService.findCommentById(commentId)); // 200 OK
     }
 
