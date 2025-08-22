@@ -30,6 +30,7 @@ public class CommentService {
                 comment.getId(),
                 comment.getUser().getId(),
                 comment.getPost().getId(),
+                comment.getUser().getName(),
                 comment.getContent(),
                 comment.getCreatedAt(),
                 comment.getModifiedAt()

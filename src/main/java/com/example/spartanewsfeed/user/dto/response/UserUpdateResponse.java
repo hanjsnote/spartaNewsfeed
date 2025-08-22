@@ -9,12 +9,9 @@ public class UserUpdateResponse {
 
     private final String name;
 
-    private final boolean isPublic;
-
-    public UserUpdateResponse(String email, String name, boolean isPublic){
+    public UserUpdateResponse(String email, String name){
         this.email = email;
         this.name = name;
-        this.isPublic = isPublic;
     }
 
 

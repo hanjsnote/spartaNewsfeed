@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "post")
+@Table(name = "posts")
 public class Post extends BaseEntity {
 
     @Id

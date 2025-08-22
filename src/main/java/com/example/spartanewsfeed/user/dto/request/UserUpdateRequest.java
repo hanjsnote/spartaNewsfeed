@@ -11,28 +11,18 @@ public class UserUpdateRequest {
 
     @NotBlank(message = "이메일은 필수 입력값입니다.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")
-    private final String email;
+    private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-    private final String oldPassword;
+    private String oldPassword;
 
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
     @Size(min = 8, message = "비밀번호는 최소 8글자 이상이어야 합니다.")
     //?=.*[A-Za-z]) 영문자 최소 1개, (?=.*[0-9]) 숫자 최소 1개, (?=.*[+*~_.-]) 특수문자 최소 1개, [A-Za-z0-9+*~_.-]+ 실제로 매핑할 문자열
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[+*~_.-])[A-Za-z0-9+*~_.-]+$", message = "대소문자 영문, 숫자, 특수문자(+*~_.-)를 최소 1글자 이상 포함해야 합니다.")
-    private final String newPassword;
+    private String newPassword;
 
     @NotBlank(message = "이름은 필수 입력값입니다.")
-    private final String name;
-
-    private final boolean isPublic;
-
-    public UserUpdateRequest(String email, String oldPassword, String newPassword, String name, boolean isPublic) {
-        this.email = email;
-        this.oldPassword = oldPassword;
-        this.newPassword = newPassword;
-        this.name = name;
-        this.isPublic = isPublic;
-    }
+    private String name;
 
 }
