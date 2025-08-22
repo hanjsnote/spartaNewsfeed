@@ -3,6 +3,7 @@ package com.example.spartanewsfeed.comment.controller;
 import com.example.spartanewsfeed.comment.dto.request.CommentRequest;
 import com.example.spartanewsfeed.comment.dto.response.CommentResponse;
 import com.example.spartanewsfeed.comment.service.CommentService;
+import com.example.spartanewsfeed.common.consts.Const;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(
-            @SessionAttribute(name = "sessionKey") Long userId,
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId,
             @PathVariable Long postId,
             @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(userId, postId, commentRequest)); // 201 Create
@@ -26,7 +27,7 @@ public class CommentController {
 
     @PatchMapping("/{commentId}") // 댓글 수정
     public ResponseEntity<CommentResponse> updateComment(
-            @SessionAttribute(name = "sessionKey") Long userId,
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId,
             @PathVariable Long postId, // 쓸 곳이 없다.
             @PathVariable Long commentId,
             @RequestBody CommentRequest commentRequest) {
@@ -50,7 +51,7 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @SessionAttribute(name = "sessionKey") Long userId,
+            @SessionAttribute(name =  Const.SESSION_KEY) Long userId,
             @PathVariable Long postId, // 쓸 곳이 없다.
             @PathVariable Long commentId) {
         commentService.deleteCommentById(userId, commentId);
