@@ -1,15 +1,13 @@
 package com.example.spartanewsfeed.user.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 public class UserDeleteRequest {
 
-    private final String password;
-
-    public UserDeleteRequest(String password){
-        this.password = password;
-    }
+    private String password;
 
 }
 

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -30,6 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     //회원 가입
+    @Transactional
     public UserSignUpResponse signUp(UserSignUpRequest request) {
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());     //요청받은 비밀번호를 암호화
@@ -38,7 +39,7 @@ public class UserService {
             throw new IllegalArgumentException("해당 이메일은 이미 사용중입니다.");
         }
 
-        if (deletedEmailRepository.existsByEmail(request.getEmail())) {
+        if (deletedEmailRepository.existsByEmail(request.getEmail())) { //탈퇴한 이메일과 비교
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "탈퇴한 이메일 입니다.");
         }
 
@@ -50,34 +51,30 @@ public class UserService {
                 user.getId(),
                 user.getEmail(),
                 user.getName(),
-                user.isPublic(),
                 user.getCreatedAt(),
                 user.getModifiedAt()
         );
     }
 
     //회원 조회
-    @Transactional(readOnly = true)
-    public List<UserFindResponse> findUsers(Long sessionUserId, String name) {
+    public List<UserFindResponse> findUsers(Long userId, String name) {
 
         List<User> users = userRepository.findAll();
         List<UserFindResponse> findUser = new ArrayList<>();
 
         if (name == null) {     //이름이 null이면 전체 조회
             for (User user : users) {
-                if (sessionUserId.equals(user.getId())) {   //본인은 모든 정보 포함
+                if (userId.equals(user.getId())) {   //본인은 모든 정보 포함
                     findUser.add(new UserFindResponse(
                             user.getId(),
                             user.getEmail(),
                             user.getName(),
-                            user.isPublic(),
                             user.getCreatedAt(),
                             user.getModifiedAt()
                     ));
                 } else {
                     findUser.add(new UserFindResponse(  //다른 유저는 민감 정보 제외
                             user.getName(),
-                            user.isPublic(),
                             user.getCreatedAt()
                     ));
                 }
@@ -86,19 +83,17 @@ public class UserService {
         }
 
         for (User user : users) {
-            if (name.equals(user.getName()) && sessionUserId.equals(user.getId())) {  //이름이 일치하는 회원만 조회
+            if (name.equals(user.getName()) && userId.equals(user.getId())) {  //이름이 일치하는 회원만 조회
                 findUser.add(new UserFindResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getName(),
-                        user.isPublic(),
                         user.getCreatedAt(),
                         user.getModifiedAt()
                 ));
             } else if (name.equals(user.getName())){
                 findUser.add(new UserFindResponse(
                         user.getName(),
-                        user.isPublic(),
                         user.getCreatedAt()
                 ));
             }
@@ -107,6 +102,7 @@ public class UserService {
     }
 
     //회원 정보 수정
+    @Transactional
     public UserUpdateResponse updateUser(Long sessionUserId, Long id, UserUpdateRequest request) {
 
         User user = userRepository.findByIdOrElseThrow(id);    //id로 회원 조회 없으면 404 에러
@@ -128,18 +124,17 @@ public class UserService {
         user.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
-                encodedNewPassword,
-                request.isPublic()
+                encodedNewPassword
         );
 
         return new UserUpdateResponse(
                 user.getEmail(),
-                user.getName(),
-                user.isPublic()
+                user.getName()
         );
     }
 
     //회원 삭제
+    @Transactional
     public void deleteUser(Long sessionUserId, Long id, UserDeleteRequest request) {
 
         User user = userRepository.findByIdOrElseThrow(id);  //id 존재 여부 확인
@@ -159,6 +154,7 @@ public class UserService {
     }
 
     //로그인
+    @Transactional
     public Long login(UserLoginRequest requestDto) {
         User user = userRepository.findByEmailOrElseThrow(requestDto.getEmail());   //이메일 존재 여부 확인
 

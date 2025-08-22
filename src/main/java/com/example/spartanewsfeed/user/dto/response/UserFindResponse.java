@@ -13,26 +13,22 @@ public class UserFindResponse {
 
     private final String name;
 
-    private final boolean isPublic;
-
     private final LocalDateTime createAt;
 
     private final LocalDateTime modifiedAt;
 
-    public UserFindResponse(Long id, String email, String name, boolean isPublic, LocalDateTime createAt, LocalDateTime modifiedAt){
+    public UserFindResponse(Long id, String email, String name, LocalDateTime createAt, LocalDateTime modifiedAt){
         this.id = id;
         this.email = email;
         this.name = name;
-        this.isPublic = isPublic;
         this.createAt = createAt;
         this.modifiedAt = modifiedAt;
     }
 
-    public UserFindResponse(String name, boolean isPublic, LocalDateTime createAt){
+    public UserFindResponse(String name, LocalDateTime createAt){
         this.id = null;
         this.email = null;
         this.name = name;
-        this.isPublic = isPublic;
         this.createAt = createAt;
         this.modifiedAt = null;
     }

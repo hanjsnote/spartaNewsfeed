@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -34,9 +33,9 @@ public class UserController {
     //회원 조회
     @GetMapping
     public ResponseEntity<List<UserFindResponse>> findUsers(
-            @SessionAttribute("sessionKey") Long sessionUserId, @RequestParam(required = false) String name) {
+            @SessionAttribute("sessionKey") Long userId, @RequestParam(required = false) String name) {
 
-        return ResponseEntity.ok(userService.findUsers(sessionUserId, name));
+        return ResponseEntity.ok(userService.findUsers(userId, name));
     }
 
     //회원 수정
