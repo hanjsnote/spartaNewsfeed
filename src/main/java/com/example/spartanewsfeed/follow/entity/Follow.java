@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "follow")
+@Table(name = "follows")
 public class Follow extends BaseEntity {
 
     @Id
@@ -17,11 +17,11 @@ public class Follow extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "follower_id")
+    @JoinColumn(name = "follower_id", nullable = false)
     private User follower;
 
     @ManyToOne
-    @JoinColumn(name = "following_id")
+    @JoinColumn(name = "following_id", nullable = false)
     private User following;
 
     public Follow(User follower, User following){
