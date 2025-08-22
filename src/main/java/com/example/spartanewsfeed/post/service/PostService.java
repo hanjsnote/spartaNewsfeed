@@ -87,6 +87,7 @@ public class PostService {
             posts = postRepository.findAll(pageable); // 아이디 값이 없다면 전체 조회
         }
 
+        // n+1 문제 해결 방안
         Set<Long> userIds = posts.stream()
                 .map(post -> post.getUser().getId())
                 .collect(Collectors.toSet());
@@ -95,6 +96,7 @@ public class PostService {
         List<User> userList = userRepository.findAllById(userIdList);
 
         return posts.map(post -> {
+            int likeCount = likeRepository.countByPost(post); // 포스트에 좋아요 개수
             Long id = post.getUser().getId();
             User user = userList.stream()
                     .filter(users -> users.getId().equals(id))
@@ -111,7 +113,7 @@ public class PostService {
                     post.getContent(),
                     post.getCreatedAt(),
                     post.getModifiedAt(),
-                    post.getLikeCount()
+                    likeCount
             );
         });
     }
@@ -128,8 +130,8 @@ public class PostService {
         List<Follow> followings = followRepository.findByFollowerId(userId);
 
         /*
-        List를 먼저 Steam으로 변환한 후
-        map으로 stream을 다시 Long으로 변환 (유저가 팔로우한 상대방 following의 id를 가져옴
+        List를 먼저 Stream 으로 변환한 후
+        map 으로 stream을 다시 Long 으로 변환 (유저가 팔로우한 상대방 following의 id를 가져옴
         toList로 다시 List로 변환
          */
         List<Long> followingIds = followings.stream()
@@ -142,15 +144,21 @@ public class PostService {
 
         Page<Post> posts = postRepository.findAllByUserIdIn(followingIds, pageable);
 
-        return posts.map(post -> new FollowerGetResponse(
-                post.getId(), // 게시글 아이디
-                post.getUser().getId(), // 상대방의 아이디
-                userId, // 로그인 유저의 아이디
-                post.getUser().getName(),
-                post.getTitle(),
-                post.getCreatedAt(),
-                post.getModifiedAt()
-        ));
+        return posts.map(post -> {
+            int likeCount = likeRepository.countByPost(post);
+
+            return new FollowerGetResponse(
+                    post.getId(), // 게시글 아이디
+                    post.getUser().getId(), // 상대방의 아이디
+                    userId, // 로그인 유저의 아이디
+                    post.getUser().getName(),
+                    post.getTitle(),
+                    post.getCreatedAt(),
+                    post.getModifiedAt(),
+                    likeCount
+
+            );
+        });
     }
 
     // 게시글 단건 조회
