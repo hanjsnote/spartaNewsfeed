@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -21,7 +22,6 @@ public class CommentController {
             @PathVariable Long postId,
             @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(userId, postId, commentRequest)); // 201 Create
-        //return ResponseEntity.ok(commentService.createComment(userId, postId, requestDto)); // 200 OK 혹시 몰라 남겨두었습니다.
     }
 
     @PatchMapping("/{commentId}") // 댓글 수정
@@ -32,14 +32,6 @@ public class CommentController {
             @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(commentService.updateComment(userId, commentId, commentRequest)); // 200 OK
     }
-
-    /*
-    @GetMapping // 댓글 조회
-    public ResponseEntity<List<ResponseDto>> getComments(
-            @PathVariable Long postId){
-        return ResponseEntity.ok(commentService.commentAll(postId)); // 200 OK
-    }
-     */
 
     @GetMapping // 댓글 조회 page 적용
     public ResponseEntity<List<CommentResponse>> getComments(
@@ -52,7 +44,7 @@ public class CommentController {
     @GetMapping("/{commentId}")  // 댓글 단건 조회
     public ResponseEntity<CommentResponse> getCommentById(
             @PathVariable Long postId, // 쓸 곳이 없다.
-            @PathVariable Long commentId){
+            @PathVariable Long commentId) {
         return ResponseEntity.ok(commentService.findCommentById(commentId)); // 200 OK
     }
 
