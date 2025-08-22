@@ -21,7 +21,7 @@ public class FollowService {
 
     public void followUser(Long followerId, Long followingId) {
         if (!userRepository.existsById(followerId) || !userRepository.existsById(followingId)) {
-            throw new DataNotFoundException("존재하지 않는 사용자입니다.");
+            throw new DataNotFoundException("사용자가 존재하지 않습니다.");
         }
 
         if (followerId.equals(followingId)) {
@@ -41,7 +41,7 @@ public class FollowService {
     public void unfollowUser(Long followerId, Long followingId) {
         // User 존재 여부 확인
         if (!userRepository.existsById(followerId) || !userRepository.existsById(followingId)) {
-            throw new DataNotFoundException("존재하지 않는 사용자입니다.");
+            throw new DataNotFoundException("사용자가 존재하지 않습니다.");
         }
 
         // 삭제하기 전에 존재하는지 먼저 확인 (에러 메시지를 위함)
