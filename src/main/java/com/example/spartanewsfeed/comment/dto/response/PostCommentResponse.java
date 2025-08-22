@@ -9,14 +9,14 @@ public class PostCommentResponse {
     private final String content;
     private final String userName;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final LocalDateTime modifiedAt;
 
-    public PostCommentResponse(Long id, Long userId, String name, String content,  LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PostCommentResponse(Long id, Long userId, String name, String content,  LocalDateTime createdAt, LocalDateTime modifiedAt ) {
         this.id = id;
         this.userId = userId;
         this.userName = name;
         this.content = content;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.modifiedAt = modifiedAt;
     }
 }
