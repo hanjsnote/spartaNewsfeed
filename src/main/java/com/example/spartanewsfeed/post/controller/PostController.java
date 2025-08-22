@@ -44,8 +44,8 @@ public class PostController {
             @SessionAttribute(name = Const.SESSION_KEY) Long userId, // 상수로 세션키를 받음
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        return ResponseEntity.ok(postService.findFollowings(userId,page,size));
+    ) {
+        return ResponseEntity.ok(postService.findFollowings(userId, page, size));
     }
 
     // 단건 조회
