@@ -41,8 +41,8 @@ public class UserService {
 
         return new UserSignUpResponse( //응답 객체 생성
                 user.getId(),
-                user.getName(),
                 user.getEmail(),
+                user.getName(),
                 user.isPublic(),
                 user.getCreatedAt(),
                 user.getModifiedAt()
@@ -51,13 +51,35 @@ public class UserService {
 
     //회원 조회
     @Transactional(readOnly = true)
-    public List<UserFindResponse> findUsers(String name) {
+    public List<UserFindResponse> findUsers(Long sessionUserId, String name) {
 
-        List<User> users = userRepository.findAll(); //모든 회원 조회
+        List<User> users = userRepository.findAll();
         List<UserFindResponse> findUser = new ArrayList<>();
 
         if (name == null) {     //이름이 null이면 전체 조회
             for (User user : users) {
+                if (sessionUserId.equals(user.getId())) {   //본인은 모든 정보 포함
+                    findUser.add(new UserFindResponse(
+                            user.getId(),
+                            user.getEmail(),
+                            user.getName(),
+                            user.isPublic(),
+                            user.getCreatedAt(),
+                            user.getModifiedAt()
+                    ));
+                } else {
+                    findUser.add(new UserFindResponse(  //다른 유저는 민감 정보 제외
+                            user.getName(),
+                            user.isPublic(),
+                            user.getCreatedAt()
+                    ));
+                }
+            }
+            return findUser;
+        }
+
+        for (User user : users) {
+            if (name.equals(user.getName()) && sessionUserId.equals(user.getId())) {  //이름이 일치하는 회원만 조회
                 findUser.add(new UserFindResponse(
                         user.getId(),
                         user.getEmail(),
@@ -66,19 +88,11 @@ public class UserService {
                         user.getCreatedAt(),
                         user.getModifiedAt()
                 ));
-            }
-            return findUser;
-        }
-
-        for (User user : users) {
-            if (name.equals(user.getName())) {  //이름이 일치하는 회원만 조회
+            } else if (name.equals(user.getName())){
                 findUser.add(new UserFindResponse(
-                        user.getId(),
                         user.getName(),
-                        user.getEmail(),
                         user.isPublic(),
-                        user.getCreatedAt(),
-                        user.getModifiedAt()
+                        user.getCreatedAt()
                 ));
             }
         }
@@ -94,13 +108,17 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 수정할 수 있습니다.");
         }
 
-        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {   //새 비밀번호와 기존 비밀번호가 다르면 403 에러
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {   //비밀번호가 같으면 400 에러
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 비밀번호와 동일한 비밀번호로 수정할 수 없습니다.");
         }
 
         String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
 
-        users.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
+        user.updateUser( //User 엔티티에 정보 수정 여기서 수정한 데이터를 userRepository.save() 로 저장하지 않는 이유는 JPA 영속성 컨텍스트의 감지 기능으로 인해 자동 반영
                 request.getEmail(),
                 request.getName(),
                 encodedNewPassword,
@@ -124,7 +142,7 @@ public class UserService {
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {   //비밀번호 검증
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "비밀번호가 일치하지 않습니다.");
         }
 
         userRepository.deleteById(id);

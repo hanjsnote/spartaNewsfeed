@@ -13,7 +13,7 @@ public class UserSignUpRequest {
     @NotBlank(message = "이메일은 필수 입력값입니다.")
     private final String email;
 
-    @NotBlank@NotBlank(message = "이름은 필수 입력값입니다.")
+    @NotBlank(message = "이름은 필수 입력값입니다.")
     private final String name;
 
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
