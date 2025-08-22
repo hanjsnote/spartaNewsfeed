@@ -4,7 +4,7 @@ import com.example.spartanewsfeed.common.entity.BaseEntity;
 import com.example.spartanewsfeed.post.entity.Post;
 import com.example.spartanewsfeed.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Getter ;
 import lombok.NoArgsConstructor;
 
 @Entity

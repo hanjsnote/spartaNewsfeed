@@ -57,7 +57,7 @@ public class CommentService {
 
     @Transactional(readOnly = true) //댓글 조회 page 적용
     public List<CommentResponse> commentAll(Long postId, int page, int size) {
-        postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("해당 게시글이 존재하지 않습니다.")); // 이 코드가 필요한지 잘 모르겠다.
+        postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("해당 게시글이 존재하지 않습니다."));
         Pageable pageable = PageRequest.of(page, size); // page 객체를 생성
         List<Comment> commentList = commentRepository.findByPost_Id(postId, pageable);
         List<CommentResponse> commentResponseList = new ArrayList<>();

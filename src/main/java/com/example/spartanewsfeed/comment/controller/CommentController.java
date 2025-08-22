@@ -33,7 +33,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.updateComment(userId, commentId, commentRequest)); // 200 OK
     }
 
-    @GetMapping // 댓글 조회 page 적용
+    @GetMapping // 댓글 조회 page 적용.
     public ResponseEntity<List<CommentResponse>> getComments(
             @PathVariable Long postId,
             @RequestParam(defaultValue = "0") int page, // page 파라미터를 받아 현재 페이지 번호를 지정
