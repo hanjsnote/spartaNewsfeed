@@ -13,8 +13,8 @@ public class SingleGetResponse {
     private final String name;
     private final String title;
     private final String content;
-    private final LocalDateTime created;
-    private final LocalDateTime modified;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
     private final int likeCount; // 좋아요 갯수
     private final List<PostCommentResponse> comments;
 
@@ -24,8 +24,8 @@ public class SingleGetResponse {
                              String name,
                              String title,
                              String content,
-                             LocalDateTime created,
-                             LocalDateTime modified,
+                             LocalDateTime createdAt,
+                             LocalDateTime modifiedAt,
                              int likeCount,
                              List<PostCommentResponse> comments) {
         this.id = id;
@@ -33,8 +33,8 @@ public class SingleGetResponse {
         this.name = name;
         this.title = title;
         this.content = content;
-        this.created = created;
-        this.modified = modified;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
         this.likeCount = likeCount;
         this.comments = comments;
     }
