@@ -57,14 +57,12 @@ public class LikeService {
             throw new NoPermissionException("자신의 글에는 좋아요를 누를 수 없습니다.");
         }
 
-        Like like = new Like(user, post);
-
         // 존재하지 않는다면 새로운 객체를 만들고, 존재한다면 객체를 삭제합니다.
         if (!exists) {
-            likeRepository.save(like);
+            likeRepository.save(new Like(user, post));
             return "좋아요 되었습니다.";
         } else {
-            likeRepository.delete(like);
+            likeRepository.delete(likeRepository.findByPostIdAndUserId(postId, userId));
             return "종아요 취소 되었습니다.";
         }
     }
