@@ -1,5 +1,6 @@
 package com.example.spartanewsfeed.common.filter;
 
+import com.example.spartanewsfeed.common.exception.InvalidCredentialException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,8 +26,7 @@ public class LoginFilter implements Filter {
         if (!isWhiteList(requestURI)) {
             HttpSession session = httpRequest.getSession(false);
             if(session == null || session.getAttribute("sessionKey") == null){
-                httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그인 해주세요.");
-                return;
+                throw new InvalidCredentialException("로그인 해주세요.");
             }
         }
         chain.doFilter(request, response);
