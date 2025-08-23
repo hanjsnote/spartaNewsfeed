@@ -11,22 +11,22 @@ public class PatchResponse {
     private final String name;
     private final String title;
     private final String content;
-    private final LocalDateTime created;
-    private final LocalDateTime modified;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
 
     public PatchResponse(Long id,
                          Long userId,
                          String name,
                          String title,
                          String content,
-                         LocalDateTime created,
-                         LocalDateTime modified) {
+                         LocalDateTime createdAt,
+                         LocalDateTime modifiedAt) {
         this.id = id;
         this.userId = userId;
         this.name = name;
         this.title = title;
         this.content = content;
-        this.created = created;
-        this.modified = modified;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 }

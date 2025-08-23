@@ -12,8 +12,8 @@ public class FollowerGetResponse {
     private final String name;
     private final String title;
     private final String content;
-    private final LocalDateTime created;
-    private final LocalDateTime modified;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
     private final int likeCount; // 좋아요 갯수
 
     public FollowerGetResponse(Long id,
@@ -22,8 +22,8 @@ public class FollowerGetResponse {
                                String name,
                                String title,
                                String content,
-                               LocalDateTime created,
-                               LocalDateTime modified,
+                               LocalDateTime createdAt,
+                               LocalDateTime modifiedAt,
                                int likeCount
     ) {
         this.id = id;
@@ -32,8 +32,8 @@ public class FollowerGetResponse {
         this.name = name;
         this.title = title;
         this.content = content;
-        this.created = created;
-        this.modified = modified;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
         this.likeCount = likeCount;
     }
 
