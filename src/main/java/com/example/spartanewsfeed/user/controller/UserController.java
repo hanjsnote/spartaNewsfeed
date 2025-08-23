@@ -1,5 +1,6 @@
 package com.example.spartanewsfeed.user.controller;
 
+import com.example.spartanewsfeed.common.consts.Const;
 import com.example.spartanewsfeed.user.dto.request.UserDeleteRequest;
 import com.example.spartanewsfeed.user.dto.request.UserSignUpRequest;
 import com.example.spartanewsfeed.user.dto.request.UserUpdateRequest;
@@ -33,7 +34,7 @@ public class UserController {
     //회원 조회
     @GetMapping
     public ResponseEntity<List<UserFindResponse>> findUsers(
-            @SessionAttribute("sessionKey") Long userId, @RequestParam(required = false) String name) {
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @RequestParam(required = false) String name) {
 
         return ResponseEntity.ok(userService.findUsers(userId, name));
     }
@@ -41,18 +42,18 @@ public class UserController {
     //회원 수정
     @PatchMapping("/{id}")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @Valid @SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id, @RequestBody UserUpdateRequest request) {
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @PathVariable long id, @Valid @RequestBody UserUpdateRequest request) {
 
-        return ResponseEntity.ok(userService.updateUser(sessionUserId, id, request));
+        return ResponseEntity.ok(userService.updateUser(userId, id, request));
     }
 
     //회원 탈퇴
     @DeleteMapping("/{id}")
 
     public ResponseEntity<Void> deleteUser(
-            @SessionAttribute("sessionKey") Long sessionUserId, @PathVariable long id, @RequestBody UserDeleteRequest request) {
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @PathVariable long id, @RequestBody UserDeleteRequest request) {
 
-        userService.deleteUser(sessionUserId, id, request);
+        userService.deleteUser(userId, id, request);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
