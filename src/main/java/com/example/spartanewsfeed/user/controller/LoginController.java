@@ -1,5 +1,6 @@
 package com.example.spartanewsfeed.user.controller;
 
+import com.example.spartanewsfeed.common.consts.Const;
 import com.example.spartanewsfeed.user.dto.request.UserLoginRequest;
 import com.example.spartanewsfeed.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ public class LoginController {
         Long id = userService.login(requestDto);
 
         HttpSession session = request.getSession(); //신규 세션 생성, JESSIONID 쿠키 발급
-        session.setAttribute("sessionKey", id);
+        session.setAttribute(Const.SESSION_KEY, id);
 
         return ResponseEntity.ok("로그인 성공");
     }
