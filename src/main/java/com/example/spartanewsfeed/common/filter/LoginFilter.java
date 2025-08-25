@@ -1,7 +1,5 @@
 package com.example.spartanewsfeed.common.filter;
 
-import com.example.spartanewsfeed.common.exception.GlobalException;
-import com.example.spartanewsfeed.common.exception.InvalidCredentialException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,8 +25,11 @@ public class LoginFilter implements Filter {
 
         if (!isWhiteList(requestURI)) {
             HttpSession session = httpRequest.getSession(false);
-            if(session == null || session.getAttribute("sessionKey") == null){
-                throw new GlobalException(HttpStatus.UNAUTHORIZED, "로그인 해주세요.");
+            if (session == null || session.getAttribute("sessionKey") == null) {
+                httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+                httpResponse.setContentType("application/json;charset=UTF-8");
+                httpResponse.getWriter().write("{\"message\":\"로그인 해주세요.\"}");
+                return;
             }
         }
         chain.doFilter(request, response);
@@ -37,3 +38,4 @@ public class LoginFilter implements Filter {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }
 }
+
