@@ -77,7 +77,8 @@ public class PostController {
             @PathVariable Long postId
     ) {
         postService.deletePost(userId, postId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
+
     }
 }
 
