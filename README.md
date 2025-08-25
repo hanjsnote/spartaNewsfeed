@@ -196,4 +196,6 @@ src
 
 # ERD
 
-<img width="729" height="841" alt="스크린샷 2025-08-18 151150" src="https://github.com/user-attachments/assets/2a4855f4-8fde-443a-9027-34781872caa6" />
+<img width="1050" height="531" alt="image" src="https://github.com/user-attachments/assets/25d9de65-95c9-4bd2-a05c-c4c4ae7f7bb7" />
+
+
