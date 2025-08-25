@@ -137,7 +137,7 @@ public class UserService {
 
     //회원 삭제
     @Transactional
-    public void deleteUser(Long userId, Long id, UserDeleteRequest request) {
+    public void deleteUser(Long userId, Long id, UserDeleteRequest deleteRequest) {
 
         User user = userRepository.findById(id).orElseThrow(    //본인의 계정이 아니면 404 에러
                 () -> new GlobalException(HttpStatus.NOT_FOUND, "해당 유저가 존재하지 않습니다.")
@@ -147,7 +147,7 @@ public class UserService {
             throw new GlobalException(HttpStatus.FORBIDDEN, "본인 계정만 삭제할 수 있습니다.");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {   //삭제시 비밀번호 검증
+        if (!passwordEncoder.matches(deleteRequest.getPassword(), user.getPassword())) {   //삭제시 비밀번호 검증
             throw new GlobalException(HttpStatus.CONFLICT, "비밀번호가 일치하지 않습니다.");
         }
 

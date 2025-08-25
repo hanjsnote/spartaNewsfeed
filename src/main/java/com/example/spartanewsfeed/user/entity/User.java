@@ -43,7 +43,5 @@ public class User extends BaseEntity {
         if (password != null) {
             this.password = password;
         }
-
-
     }
 }

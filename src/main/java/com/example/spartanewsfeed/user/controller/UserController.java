@@ -8,6 +8,8 @@ import com.example.spartanewsfeed.user.dto.response.UserFindResponse;
 import com.example.spartanewsfeed.user.dto.response.UserSignUpResponse;
 import com.example.spartanewsfeed.user.dto.response.UserUpdateResponse;
 import com.example.spartanewsfeed.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +26,9 @@ public class UserController {
 
     //회원 가입
     @PostMapping("/signup")
-    public ResponseEntity<UserSignUpResponse> signUp(@Valid @RequestBody UserSignUpRequest request) {
-
+    public ResponseEntity<UserSignUpResponse> signUp(
+            @Valid @RequestBody UserSignUpRequest request
+    ) {
         UserSignUpResponse userSignUpResponse = userService.signUp(request);
 
         return new ResponseEntity<>(userSignUpResponse, HttpStatus.CREATED);
@@ -34,16 +37,19 @@ public class UserController {
     //회원 조회
     @GetMapping
     public ResponseEntity<List<UserFindResponse>> findUsers(
-            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @RequestParam(required = false) String name) {
-
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId,
+            @RequestParam(required = false) String name
+    ) {
         return ResponseEntity.ok(userService.findUsers(userId, name));
     }
 
     //회원 수정
     @PatchMapping("/{id}")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @PathVariable long id, @Valid @RequestBody UserUpdateRequest request) {
-
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId,
+            @PathVariable long id,
+            @Valid @RequestBody UserUpdateRequest request
+    ) {
         return ResponseEntity.ok(userService.updateUser(userId, id, request));
     }
 
@@ -51,9 +57,16 @@ public class UserController {
     @DeleteMapping("/{id}")
 
     public ResponseEntity<Void> deleteUser(
-            @SessionAttribute(name = Const.SESSION_KEY) Long userId, @PathVariable long id, @RequestBody UserDeleteRequest request) {
+            @SessionAttribute(name = Const.SESSION_KEY) Long userId,
+            @PathVariable long id,
+            @RequestBody UserDeleteRequest deleteRequest, HttpServletRequest servletRequest
+    ) {
+        userService.deleteUser(userId, id, deleteRequest);
 
-        userService.deleteUser(userId, id, request);
+        HttpSession session = servletRequest.getSession(false);
+        if(session != null){
+            session.invalidate();   //탈퇴와 동시에 해당 세션(데이터)를 삭제
+        }
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
